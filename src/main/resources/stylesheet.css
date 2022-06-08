@@ -1,0 +1,75 @@
+.code-area {
+    -fx-background-color: #f0f0f0;
+}
+
+.lineno {
+    -fx-background-color: #f0f0f0;
+}
+
+.field-arithmatic {
+    -fx-fill: #824082;
+    -fx-font-weight: bolder;
+}
+
+.pointer-arithmatic {
+    -fx-fill: darkgreen;
+    -fx-font-weight: bolder;
+}
+
+.loop {
+    -fx-fill: #BB9F06;
+    -fx-font-weight: bolder;
+}
+
+.input-output {
+    -fx-fill: #087F8C;
+    -fx-font-weight: bolder;
+}
+
+.comment {
+    -fx-fill: grey;
+    -fx-font-style: italic;
+}
+
+#output-octal {
+    -fx-border-color: black;
+    -fx-font-family: monospace;
+    -fx-border-radius: 5;
+    -fx-padding: 1;
+    -fx-start-margin: 2;
+    -fx-end-margin: 2;
+    -fx-font-size: 14;
+}
+
+#output-normal {
+    -fx-border-color: black;
+    -fx-border-radius: 5;
+    -fx-padding: 1;
+    -fx-start-margin: 2;
+    -fx-end-margin: 2;
+    -fx-font-size: 14;
+}
+
+#output-error {
+    -fx-text-fill: red;
+    -fx-font-style: italic;
+}
+
+#memory-grid {
+    -fx-snap-to-pixel: true;
+    -fx-border-color: grey;
+    -fx-border-radius: 5;
+    -fx-padding: 1;
+    -fx-start-margin: 2;
+    -fx-end-margin: 2;
+    -fx-font-size: 14;
+}
+
+#memory-data-empty {
+    -fx-font-family: monospace;
+}
+
+#memory-data-filled {
+    -fx-font-family: monospace;
+    -fx-font-weight: bolder;
+}

@@ -1,0 +1,32 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'org.openjfx.javafxplugin' version '0.0.13'
+    id 'org.jetbrains.kotlin.jvm' version '1.7.0-RC2'
+}
+
+group 'qaz.code'
+version '0.1.0'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+    implementation 'org.fxmisc.richtext:richtextfx:0.10.9'
+}
+
+javafx {
+    version = "17.0.1"
+    modules = [ 'javafx.controls' ]
+}
+
+application {
+    mainClass = 'qaz.code.Main'
+}
+
+test {
+    useJUnitPlatform()
+}
