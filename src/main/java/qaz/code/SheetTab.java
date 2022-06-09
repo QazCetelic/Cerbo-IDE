@@ -10,8 +10,4 @@ public class SheetTab extends Tab {
     public Sheet getSheet() {
         return (Sheet) getContent();
     }
-
-    public SheetTab() {
-        this("Untitled", "");
-    }
 }

@@ -11,31 +11,32 @@ import javafx.stage.Stage;
 import java.util.Objects;
 
 public class Cerbo extends Application {
+    private MainPane mainPane;
+    private Stage mainStage;
     public static void main(String[] args) {
         launch(args);
     }
 
     @Override
     public void start(Stage stage) {
-        MainPane mainPane = new MainPane();
+        mainPane = new MainPane();
+        mainStage = stage;
         stage.setTitle("Cerbo IDE");
         Scene scene = new Scene(mainPane, 800, 500);
         scene.getStylesheets().add(getClass().getResource("/stylesheet.css").toExternalForm());
+        changeTitle();
         scene.getAccelerators().put(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN), () -> {
-            mainPane.getSheetsPane().addSheet(new SheetTab());
+            mainPane.getSheetsPane().addEmptySheet();
         });
-        mainPane.getSheetsPane().getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            SheetTab sheetTab = (SheetTab) newValue;
-            stage.setTitle("Cerbo IDE - " + sheetTab.getText());
-        });
+        mainPane.getSheetsPane().getSelectionModel().selectedItemProperty().addListener(observable -> changeTitle());
         Image icon = new Image(Objects.requireNonNull(Cerbo.class.getResourceAsStream("/icon.png"), "Failed to load icon"));
         stage.getIcons().add(icon);
         stage.setScene(scene);
+        stage.setOnCloseRequest(e -> System.exit(0));
         stage.show();
     }
 
-    @Override
-    public void stop() throws Exception {
-        System.exit(0);
+    public void changeTitle() {
+        mainStage.setTitle("Cerbo IDE - " + mainPane.getSheetsPane().getSelectedSheetTab().getText());
     }
 }

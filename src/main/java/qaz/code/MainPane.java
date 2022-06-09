@@ -13,6 +13,6 @@ public class MainPane extends BorderPane {
     public MainPane() {
         setCenter(sheetsPane);
         setTop(menuBar);
-        sheetsPane.addSheet(new SheetTab());
+        sheetsPane.addEmptySheet();
     }
 }

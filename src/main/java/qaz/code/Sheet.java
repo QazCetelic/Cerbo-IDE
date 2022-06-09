@@ -3,14 +3,12 @@ package qaz.code;
 import javafx.application.Platform;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
-import org.fxmisc.richtext.CodeArea;
-import org.fxmisc.richtext.LineNumberFactory;
 
 import java.util.ArrayList;
 
 public class Sheet extends BorderPane {
     // Execution of code
-    private final ExecutionMananger executionMananger = new ExecutionMananger();
+    private final ExecutionManager executionManager = new ExecutionManager();
     private Execution lastExecution;
 
     public Execution getLastExecution() {
@@ -33,8 +31,8 @@ public class Sheet extends BorderPane {
         setRight(memoryPane);
         setBottom(inputField);
         setTop(outputPane);
-        codePane.setOnKeyReleased(e -> execute());
-        inputField.setOnKeyReleased(e -> execute());
+        codePane.codeArea.textProperty().addListener(e -> execute());
+        inputField.textProperty().addListener(e -> execute());
     }
 
     public void setResult(Execution.Result result, Execution execution) {
@@ -59,7 +57,7 @@ public class Sheet extends BorderPane {
             ArrayList<Character> input = new ArrayList<>();
             for (char c : inputField.getText().toCharArray()) input.add(c);
 
-            executionMananger.execute(code, input, this);
+            executionManager.execute(code, input, this);
         }
     }
 }

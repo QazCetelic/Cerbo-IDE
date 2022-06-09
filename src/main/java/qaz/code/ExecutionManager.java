@@ -2,10 +2,9 @@ package qaz.code;
 
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
-public class ExecutionMananger {
+public class ExecutionManager {
     private Thread executionThread;
     private Thread killThread;
 
@@ -39,6 +38,7 @@ public class ExecutionMananger {
             catch (InterruptedException e) {}
             if (executionThread.isAlive()) {
                 System.err.println("Execution is taking too long, aborting...");
+                executionThread.stop();
                 executionThread.interrupt();
             }
         });

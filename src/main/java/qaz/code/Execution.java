@@ -1,16 +1,13 @@
 package qaz.code;
 
-import java.sql.Time;
-import java.time.Duration;
-import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 class Execution {
     private int pointer;
     private final int size;
+    private final int maximumOperations;
+    private int operations;
     private final byte[] memory;
 
     public byte[] getMemory() {
@@ -38,6 +35,14 @@ class Execution {
     public Execution(Profile profile) {
         this.size = profile.size;
         memory = new byte[this.size];
+        this.maximumOperations = profile.maximumOperations;
+    }
+
+    private void operation() throws IllegalStateException {
+        operations++;
+        if (operations >= maximumOperations) {
+            throw new IllegalStateException("Maximum of " + maximumOperations + " operations exceeded");
+        }
     }
 
     public Result interpret(String s, ArrayList<Character> input) {
@@ -51,8 +56,11 @@ class Execution {
             ArrayList<Character> lineOutput = new ArrayList<>();
 
             for (int i = 0; i < s.length(); i++) {
+                operation();
+                System.out.println("Operations: " + operations);
                 // > moves the pointer to the right
                 if (s.charAt(i) == '>') {
+                    operation();
                     if (pointer == size - 1) {
                         pointer = 0;
                     }
@@ -62,6 +70,7 @@ class Execution {
                 }
                 // < moves the pointer to the left
                 else if (s.charAt(i) == '<') {
+                    operation();
                     if (pointer == 0) {
                         // Wraps to right
                         pointer = size - 1;
@@ -72,14 +81,17 @@ class Execution {
                 }
                 // + increments the value of the memory cell under the pointer
                 else if (s.charAt(i) == '+') {
+                    operation();
                     memory[pointer]++;
                 }
                 // - decrements the value of the memory cell under the pointer
                 else if (s.charAt(i) == '-') {
+                    operation();
                     memory[pointer]--;
                 }
                 // . outputs the character signified by the cell at the pointer
                 else if (s.charAt(i) == '.') {
+                    operation();
                     char character = (char) (memory[pointer]);
                     if (character == '\n') {
                         output.add(lineOutput);
@@ -91,6 +103,7 @@ class Execution {
                 }
                 // , inputs a character and store it in the cell at the pointer
                 else if (s.charAt(i) == ',') {
+                    operation();
                     if (input.size() > 0) {
                         memory[pointer] = (byte) (input.remove(0).charValue());
                     }
@@ -100,9 +113,11 @@ class Execution {
                 }
                 // [ jumps past the matching ] if the cell under the pointer is 0
                 else if (s.charAt(i) == '[') {
+                    operation();
                     if (memory[pointer] == 0) {
                         i++;
                         while (c > 0 || s.charAt(i) != ']') {
+                            operation();
                             if (s.charAt(i) == '[') {
                                 c++;
                             }
@@ -115,9 +130,11 @@ class Execution {
                 }
                 // ] jumps back to the matching [ if the cell under the pointer is nonzero
                 else if (s.charAt(i) == ']') {
+                    operation();
                     if (memory[pointer] != 0) {
                         i--;
                         while (c > 0 || s.charAt(i) != '[') {
+                            operation();
                             if (s.charAt(i) == ']') {
                                 c++;
                             }
@@ -137,6 +154,7 @@ class Execution {
             return new Succes(output, (end - start));
         }
         catch (Exception e) {
+            System.err.println(e.getMessage());
             long end = System.currentTimeMillis();
             return new Failure(e.getMessage(), (end - start));
         }
@@ -144,12 +162,14 @@ class Execution {
 
     public static class Profile {
         final int size;
-        public Profile(int size) {
+        final int maximumOperations;
+        public Profile(int size, int maximumOperations) {
             // TODO create a profile using settings pane and use it for the execution
             this.size = size;
+            this.maximumOperations = maximumOperations;
         }
 
-        public static final Profile DEFAULT = new Profile(30_000);
+        public static final Profile DEFAULT = new Profile(30_000, 15_000);
     }
 
     public abstract static class Result {
