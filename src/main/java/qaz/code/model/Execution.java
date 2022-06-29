@@ -1,9 +1,9 @@
-package qaz.code;
+package qaz.code.model;
 
 import java.util.ArrayList;
 import java.util.List;
 
-class Execution {
+public class Execution {
     private int pointer;
     private final int size;
     private final int maximumOperations;
@@ -38,30 +38,30 @@ class Execution {
         this.maximumOperations = profile.maximumOperations;
     }
 
-    private void operation() throws IllegalStateException {
+    private void loopOperation() throws ExecutionException {
         operations++;
         if (operations >= maximumOperations) {
-            throw new IllegalStateException("Maximum of " + maximumOperations + " operations exceeded");
+            throw new ExecutionException("Infinite loop? Maximum of " + maximumOperations + " looping operations exceeded");
         }
     }
 
     public Result interpret(String s, ArrayList<Character> input) {
-        // Remove everything that isn't an instruction
+        // Remove everything that isn't an instruction or newline
         s = s.replaceAll("[^><\\[\\],.\n+-]", "");
 
         long start = System.currentTimeMillis();
         try {
+            if (!Analyzer.isBalanced(s)) throw new ExecutionException("Brackets are not balanced");
+            
             int c = 0;
             ArrayList<List<Character>> output = new ArrayList<>();
             ArrayList<Character> lineOutput = new ArrayList<>();
 
             for (int i = 0; i < s.length(); i++) {
-                operation();
                 System.out.println("Operations: " + operations);
                 // > moves the pointer to the right
                 if (s.charAt(i) == '>') {
-                    operation();
-                    if (pointer == size - 1) {
+                    if (pointer == (size - 1)) {
                         pointer = 0;
                     }
                     else {
@@ -70,7 +70,6 @@ class Execution {
                 }
                 // < moves the pointer to the left
                 else if (s.charAt(i) == '<') {
-                    operation();
                     if (pointer == 0) {
                         // Wraps to right
                         pointer = size - 1;
@@ -81,43 +80,37 @@ class Execution {
                 }
                 // + increments the value of the memory cell under the pointer
                 else if (s.charAt(i) == '+') {
-                    operation();
                     memory[pointer]++;
                 }
                 // - decrements the value of the memory cell under the pointer
                 else if (s.charAt(i) == '-') {
-                    operation();
                     memory[pointer]--;
                 }
                 // . outputs the character signified by the cell at the pointer
                 else if (s.charAt(i) == '.') {
-                    operation();
                     char character = (char) (memory[pointer]);
-                    if (character == '\n') {
-                        output.add(lineOutput);
-                        lineOutput = new ArrayList<>();
-                    }
-                    else {
-                        lineOutput.add(character);
-                    }
+                    lineOutput.add(character);
+                }
+                else if (s.charAt(i) == '\n') {
+                    output.add(lineOutput);
+                    lineOutput = new ArrayList<>();
                 }
                 // , inputs a character and store it in the cell at the pointer
                 else if (s.charAt(i) == ',') {
-                    operation();
                     if (input.size() > 0) {
                         memory[pointer] = (byte) (input.remove(0).charValue());
                     }
                     else {
-                        throw new IllegalStateException("No input available");
+                        throw new ExecutionException("No input available");
                     }
                 }
                 // [ jumps past the matching ] if the cell under the pointer is 0
                 else if (s.charAt(i) == '[') {
-                    operation();
                     if (memory[pointer] == 0) {
+                        loopOperation();
                         i++;
                         while (c > 0 || s.charAt(i) != ']') {
-                            operation();
+                            loopOperation();
                             if (s.charAt(i) == '[') {
                                 c++;
                             }
@@ -130,11 +123,11 @@ class Execution {
                 }
                 // ] jumps back to the matching [ if the cell under the pointer is nonzero
                 else if (s.charAt(i) == ']') {
-                    operation();
                     if (memory[pointer] != 0) {
+                        loopOperation();
                         i--;
                         while (c > 0 || s.charAt(i) != '[') {
-                            operation();
+                            loopOperation();
                             if (s.charAt(i) == ']') {
                                 c++;
                             }
@@ -153,7 +146,7 @@ class Execution {
             long end = System.currentTimeMillis();
             return new Succes(output, (end - start));
         }
-        catch (Exception e) {
+        catch (ExecutionException e) {
             System.err.println(e.getMessage());
             long end = System.currentTimeMillis();
             return new Failure(e.getMessage(), (end - start));
@@ -169,7 +162,7 @@ class Execution {
             this.maximumOperations = maximumOperations;
         }
 
-        public static final Profile DEFAULT = new Profile(30_000, 15_000);
+        public static final Profile DEFAULT = new Profile(30_000, 1_000);
     }
 
     public abstract static class Result {

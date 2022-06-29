@@ -2,9 +2,9 @@
     -fx-background-color: #f0f0f0;
 }
 
-.lineno {
+/*.lineno {
     -fx-background-color: #f0f0f0;
-}
+}*/
 
 .field-arithmatic {
     -fx-fill: #824082;
@@ -55,11 +55,12 @@
     -fx-font-style: italic;
 }
 
-#memory-grid {
+.memory-grid {
     -fx-snap-to-pixel: true;
     -fx-border-color: grey;
     -fx-border-radius: 5;
     -fx-padding: 1;
+    /* To ensure the spacing is the same horizontally as vertically */
     -fx-start-margin: 2;
     -fx-end-margin: 2;
     -fx-font-size: 14;

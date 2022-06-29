@@ -1,11 +1,11 @@
-package qaz.code;
+package qaz.code.view;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
 
 public class Highlighter {
-    public static Pattern pattern = Pattern.compile(
+    public static final Pattern PATTERN = Pattern.compile(
             "(?<FIELD>[-+])|(?<POINTER>[><])|(?<IO>[,.])|(?<LOOP>[]\\[])|(?<COMMENT>.)"
     );
 

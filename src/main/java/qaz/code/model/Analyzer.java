@@ -1,4 +1,4 @@
-package qaz.code;
+package qaz.code.model;
 
 public class Analyzer {
     public static boolean isBalanced(String str) {

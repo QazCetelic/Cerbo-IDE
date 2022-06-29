@@ -1,8 +1,9 @@
-package qaz.code;
+package qaz.code.model;
+
+import qaz.code.Sheet;
 
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
 
 public class ExecutionManager {
     private Thread executionThread;
@@ -14,9 +15,9 @@ public class ExecutionManager {
         if (killThread != null && killThread.isAlive()) killThread.interrupt();
         // Create new thread
         executionThread = new Thread(() -> {
-            // Delay 500ms
+            // Delay 100ms
             try {
-                TimeUnit.MILLISECONDS.sleep(100);
+                Thread.sleep(100);
             }
             catch (InterruptedException ignored) {}
             // Create execution machine
@@ -33,12 +34,11 @@ public class ExecutionManager {
         // Creates parallel thread that kills execution thread if it takes too long
         killThread = new Thread(() -> {
             try {
-                TimeUnit.SECONDS.sleep(5);
+                Thread.sleep(5000);
             }
-            catch (InterruptedException e) {}
+            catch (InterruptedException ignored) {}
             if (executionThread.isAlive()) {
                 System.err.println("Execution is taking too long, aborting...");
-                executionThread.stop();
                 executionThread.interrupt();
             }
         });

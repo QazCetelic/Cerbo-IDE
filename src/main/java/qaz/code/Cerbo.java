@@ -7,6 +7,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.stage.Stage;
+import qaz.code.view.MainPane;
 
 import java.util.Objects;
 

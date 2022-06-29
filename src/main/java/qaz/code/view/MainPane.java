@@ -1,4 +1,4 @@
-package qaz.code;
+package qaz.code.view;
 
 import javafx.scene.layout.BorderPane;
 

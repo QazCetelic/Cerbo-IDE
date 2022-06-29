@@ -1,16 +1,20 @@
-package qaz.code;
+package qaz.code.view;
 
+import javafx.beans.binding.DoubleBinding;
+import javafx.beans.binding.IntegerBinding;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollBar;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.Tooltip;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
+import qaz.code.model.Execution;
+import qaz.code.view.ByteDisplay;
 
 public class MemoryPane extends BorderPane {
     private Label filled;
     private Label lastIndex;
     private ScrollPane scrollPane;
-    private GridPane gridPane;
     public MemoryPane() {
         scrollPane = new ScrollPane();
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
@@ -24,24 +28,18 @@ public class MemoryPane extends BorderPane {
         lastIndex = new Label("last index: " + execution.getLastFilledIndex());
         setBottom(lastIndex);
 
-        gridPane = new GridPane();
-        gridPane.setId("memory-grid");
-        gridPane.setHgap(5);
+        FlowPane flowPane = new FlowPane(0, 0);
+        flowPane.setHgap(5);
+        flowPane.maxWidthProperty().bind(scrollPane.widthProperty().subtract(new ScrollBar().getWidth()));
 
         byte[] memory = execution.getMemory();
-
+        DoubleBinding rowsBinding = widthProperty().divide(new ByteDisplay((byte) 0, false).getWidth());
         // Look for the last index of the memory array that is not 0
         for (int i = 0; i <= execution.getLastFilledIndex(); i++) {
-            Label label = new Label(String.format("%03X", memory[i]));
-            if (memory[i] == 0) {
-                label.setId("memory-data-empty");
-            }
-            else {
-                label.setId("memory-data-filled");
-                label.setTooltip(new Tooltip(String.valueOf((char) memory[i])));
-            }
-            gridPane.add(label, i % 4, i / 4);
+            ByteDisplay byteDisplay = new ByteDisplay(memory[i], false);
+            byteDisplay.getStyleClass().add("memory-grid");
+            flowPane.getChildren().add(byteDisplay);
         }
-        scrollPane.setContent(gridPane);
+        scrollPane.setContent(flowPane);
     }
 }

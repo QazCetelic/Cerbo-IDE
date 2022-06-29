@@ -1,7 +1,9 @@
-package qaz.code;
+package qaz.code.view;
 
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.BorderStroke;
 import javafx.scene.layout.HBox;
 
 public class OutputPane extends HBox {
@@ -9,21 +11,16 @@ public class OutputPane extends HBox {
 
     }
 
+    // TODO use byte[] as parameter
     public void setOutput(String output) {
         getChildren().clear();
-        for (char c : output.toCharArray()) {
-            Label label;
-            String charString = String.valueOf(c);
-            if (c < 32 || c > 126) {
-                label = new Label(Integer.toOctalString(c));
-                label.setId("output-octal");
+        char[] chars = output.toCharArray();
+        for (int i = 0; i < chars.length; i++) {
+            ByteDisplay byteDisplay = new ByteDisplay((byte) chars[i], true);
+            getChildren().add(byteDisplay);
+            if (i != chars.length - 1) {
+                getChildren().add(new Label("|"));
             }
-            else {
-                label = new Label(charString);
-                label.setId("output-normal");
-            }
-            label.setAlignment(Pos.BOTTOM_CENTER);
-            getChildren().add(label);
         }
     }
 

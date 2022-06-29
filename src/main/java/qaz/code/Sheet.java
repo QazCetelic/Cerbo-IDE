@@ -1,8 +1,14 @@
 package qaz.code;
 
 import javafx.application.Platform;
+import javafx.beans.binding.DoubleBinding;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
+import qaz.code.model.Execution;
+import qaz.code.model.ExecutionManager;
+import qaz.code.view.CodePane;
+import qaz.code.view.MemoryPane;
+import qaz.code.view.OutputPane;
 
 import java.util.ArrayList;
 
@@ -26,11 +32,18 @@ public class Sheet extends BorderPane {
         memoryPane = new MemoryPane();
         inputField = new TextField();
         outputPane = new OutputPane();
-        inputField.setPromptText("Input");
+        
         setCenter(codePane);
-        setRight(memoryPane);
+        setLeft(memoryPane);
         setBottom(inputField);
         setTop(outputPane);
+        
+        outputPane.maxWidthProperty().bind(widthProperty());
+        DoubleBinding memoryPaneWidth = widthProperty().multiply(0.25);
+        memoryPane.maxWidthProperty().bind(memoryPaneWidth);
+        memoryPane.prefWidthProperty().bind(memoryPaneWidth);
+    
+        inputField.setPromptText("Input");
         codePane.codeArea.textProperty().addListener(e -> execute());
         inputField.textProperty().addListener(e -> execute());
     }
@@ -52,12 +65,10 @@ public class Sheet extends BorderPane {
 
     public void execute() {
         String code = codePane.codeArea.getText();
-        if (Analyzer.isBalanced(code)) {
-            // Fills ArrayList with characters from input field
-            ArrayList<Character> input = new ArrayList<>();
-            for (char c : inputField.getText().toCharArray()) input.add(c);
-
-            executionManager.execute(code, input, this);
-        }
+        // Fills ArrayList with characters from input field
+        ArrayList<Character> input = new ArrayList<>();
+        for (char c : inputField.getText().toCharArray()) input.add(c);
+    
+        executionManager.execute(code, input, this);
     }
 }
