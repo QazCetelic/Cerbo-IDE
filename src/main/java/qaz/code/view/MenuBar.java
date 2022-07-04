@@ -26,6 +26,10 @@ public class MenuBar extends javafx.scene.control.MenuBar {
         RadioMenuItem generalOutputView = new RadioMenuItem("General output view");
         view.getItems().addAll(memoryView, outputView, lineOutputView, generalOutputView);
         view.getItems().forEach(menuItem -> ((RadioMenuItem) menuItem).setSelected(true));
-        getMenus().addAll(file, edit, view);
+        Menu execution = new Menu("Execution");
+        RadioMenuItem execute = new RadioMenuItem("Execute");
+        // TODO add execution profiles
+        execution.getItems().addAll(execute);
+        getMenus().addAll(file, edit, view, execution);
     }
 }
