@@ -15,10 +15,8 @@ public class ByteDisplay extends Label {
      * @param showChar Whether to show byte as a character if it's a character.
      */
     public ByteDisplay(byte b, boolean showChar, int index) {
-        super();
+        super(NUMBER_FORMAT.format(b));
         getStyleClass().add("memory-field");
-        setText(NUMBER_FORMAT.format(b));
-//        setText(String.format("%03X", b));
         Tooltip tooltip;
         if (b == 0) {
             tooltip = new Tooltip(index + ": Empty field");

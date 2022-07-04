@@ -2,7 +2,9 @@ package qaz.code.view;
 
 import com.github.mouse0w0.darculafx.DarculaFX;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
+import javafx.beans.binding.StringBinding;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -45,6 +47,17 @@ public class CodePane extends BorderPane {
             sheet.codeProperty().set(newValue);
         });
     
+        StringBinding lineNumberBinding = Bindings.createStringBinding(() -> {
+            int line = codeArea.currentParagraphProperty().getValue() + 1;
+            int column = codeArea.caretColumnProperty().getValue();
+            
+            return line + ":" + column;
+        }, codeArea.currentParagraphProperty(), codeArea.caretColumnProperty());
+        
+        Label lineNumberLabel = new Label();
+        lineNumberLabel.textProperty().bind(lineNumberBinding);
+        setBottom(lineNumberLabel);
+    
         DoubleBinding resultWidthRestriction = widthProperty().multiply(0.20);
         resultsPane.maxWidthProperty().bind(resultWidthRestriction);
         resultsPane.prefWidthProperty().bind(resultWidthRestriction);
@@ -52,8 +65,8 @@ public class CodePane extends BorderPane {
         
         // auto-indent: insert previous line's indents on enter
         final Pattern whiteSpace = Pattern.compile("^\\s+");
-        codeArea.addEventHandler(KeyEvent.KEY_PRESSED, KE -> {
-            if (KE.getCode() == KeyCode.ENTER) {
+        codeArea.addEventHandler(KeyEvent.KEY_PRESSED, keyEvent -> {
+            if (keyEvent.getCode() == KeyCode.ENTER) {
                 int caretPosition = codeArea.getCaretPosition();
                 int currentParagraph = codeArea.getCurrentParagraph();
                 Matcher m0 = whiteSpace.matcher(codeArea.getParagraph(currentParagraph - 1).getSegments().get(0));
