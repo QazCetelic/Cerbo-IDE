@@ -5,7 +5,6 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.HBox;
 import qaz.code.model.Execution;
 
 public class MemoryPane extends BorderPane {
@@ -41,7 +40,7 @@ public class MemoryPane extends BorderPane {
         int lastIndex = execution.getLastFilledIndex();
         // Look for the last index of the memory array that is not 0
         for (int i = 0; i <= lastIndex; i++) {
-            ByteDisplay byteDisplay = new ByteDisplay(memory[i], false, i);
+            ByteView byteDisplay = new ByteView(memory[i], false, i);
             byteDisplay.getStyleClass().add("memory-grid");
             flowPane.getChildren().add(byteDisplay);
         }

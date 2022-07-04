@@ -11,12 +11,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Highlighter {
-    public static final Highlighter INSTANCE = new Highlighter();
     public static final Pattern PATTERN = Pattern.compile("(?<FIELD>[-+])|(?<POINTER>[><])|(?<IO>[,.])|(?<LOOP>[]\\[])|(?<COMMENT>.+?)");
-    
-    private Highlighter() {
-    
-    }
     
     public static StyleSpans<Collection<String>> computeHighlighting(String text) {
         Matcher matcher = PATTERN.matcher(text);
@@ -45,7 +40,7 @@ public class Highlighter {
         return spansBuilder.create();
     }
     
-    private void process(CodeArea codeArea) {
+    private static void process(CodeArea codeArea) {
         String text = codeArea.getText();
         boolean bracketsBalanced = Analyzer.isBalanced(text);
         Map<Integer, Boolean> brackets = new HashMap<>();
@@ -136,7 +131,7 @@ public class Highlighter {
         }
     }
     
-    private StyleSpans<Collection<String>> computeHighlighting2(String text) {
+    private static StyleSpans<Collection<String>> computeHighlighting2(String text) {
         StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<>();
         boolean bracketsBalanced = Analyzer.isBalanced(text);
         

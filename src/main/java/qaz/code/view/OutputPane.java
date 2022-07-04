@@ -2,8 +2,6 @@ package qaz.code.view;
 
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
-import javafx.scene.layout.Border;
-import javafx.scene.layout.BorderStroke;
 import javafx.scene.layout.HBox;
 
 public class OutputPane extends HBox {
@@ -18,8 +16,8 @@ public class OutputPane extends HBox {
         char[] chars = output.toCharArray();
         if (chars.length != 0) {
             for (int i = 0; i < chars.length; i++) {
-                ByteDisplay byteDisplay = new ByteDisplay((byte) chars[i], true, i);
-                getChildren().add(byteDisplay);
+                ByteView byteView = new ByteView((byte) chars[i], true, i);
+                getChildren().add(byteView);
                 if (i != chars.length - 1) {
                     Label separator = new Label("\u00BB");
                     separator.getStyleClass().add("output-seperator");

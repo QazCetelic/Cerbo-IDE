@@ -6,7 +6,7 @@ import javafx.scene.control.Tooltip;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
-public class ByteDisplay extends Label {
+public class ByteView extends Label {
     private static final NumberFormat NUMBER_FORMAT = new DecimalFormat("000");
     
     /**
@@ -14,7 +14,7 @@ public class ByteDisplay extends Label {
      * @param b The byte to display.
      * @param showChar Whether to show byte as a character if it's a character.
      */
-    public ByteDisplay(byte b, boolean showChar, int index) {
+    public ByteView(byte b, boolean showChar, int index) {
         super(NUMBER_FORMAT.format(b));
         getStyleClass().add("memory-field");
         Tooltip tooltip;

@@ -1,6 +1,5 @@
 package qaz.code.view;
 
-import com.github.mouse0w0.darculafx.DarculaFX;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
@@ -24,7 +23,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CodePane extends BorderPane {
-    private final Highlighter highlighter = Highlighter.INSTANCE;
     public final CodeArea codeArea;
     public ScrollPane resultsPane;
     private final Sheet sheet;
@@ -84,7 +82,7 @@ public class CodePane extends BorderPane {
             if (!result.isEmpty()) {
                 HBox row = new HBox(3);
                 for (Character c : result) {
-                    row.getChildren().add(new ByteDisplay((byte) (char) c, true, index++));
+                    row.getChildren().add(new ByteView((byte) (char) c, true, index++));
                 }
                 rows.getChildren().add(row);
             }

@@ -1,14 +1,10 @@
 package qaz.code.model;
 
-import javafx.beans.property.*;
-import javafx.collections.FXCollections;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.scene.layout.BorderPane;
-import qaz.code.model.Execution;
-import qaz.code.model.ExecutionManager;
-import qaz.code.model.Result;
-import qaz.code.view.Highlighter;
-
-import java.util.ArrayList;
 
 public class Sheet extends BorderPane {
     // TODO don't have these classes for individual sheets but for the whole application
