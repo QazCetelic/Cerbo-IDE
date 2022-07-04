@@ -3,28 +3,42 @@ package qaz.code.view;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+
 public class ByteDisplay extends Label {
+    private static final NumberFormat NUMBER_FORMAT = new DecimalFormat("000");
+    
     /**
      * Creates a new ByteDisplay.
      * @param b The byte to display.
      * @param showChar Whether to show byte as a character if it's a character.
      */
-    public ByteDisplay(byte b, boolean showChar) {
-        super(String.format("%03X", b));
+    public ByteDisplay(byte b, boolean showChar, int index) {
+        super();
+        getStyleClass().add("memory-field");
+        setText(NUMBER_FORMAT.format(b));
+//        setText(String.format("%03X", b));
+        Tooltip tooltip;
         if (b == 0) {
-            setId("memory-data-empty");
+            tooltip = new Tooltip(index + ": Empty field");
         }
         else {
-            char c = (char) b;
-            if (showChar && c >= 32 && c <= 126) {
-                setText(String.valueOf(c));
-                setId("memory-data-normal");
+            getStyleClass().add("memory-field-filled");
+            boolean isChar = (b >= 32 && b <= 126);
+            if (isChar) {
+                getStyleClass().add("memory-field-char");
+                char c = (char) b;
+                tooltip = new Tooltip(index + ": Character '" + c + "'");
+                if (showChar) {
+                    setText(String.valueOf(c));
+                }
             }
             else {
-                setId("memory-data-filled");
-                setTooltip(new Tooltip(String.valueOf((char) b)));
+                tooltip = new Tooltip(index + ": Number " + b);
             }
         }
-        
+        setTooltip(tooltip);
     }
+    
 }

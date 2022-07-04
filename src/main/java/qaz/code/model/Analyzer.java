@@ -1,5 +1,10 @@
 package qaz.code.model;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class Analyzer {
     public static boolean isBalanced(String str) {
         int count = 0;
@@ -15,5 +20,21 @@ public class Analyzer {
             }
         }
         return count == 0;
+    }
+    
+    private static final Pattern EMPTY_LOOP_PATTERN = Pattern.compile("\\[[^]\\[.,><+-]*]");
+    
+    /**
+     * Finds any loop that doesn't contain any operators.
+     * @param code The code that potentially contains empty loops.
+     * @return All the starting indexes of the empty loops.
+     */
+    public static List<Integer> findEmptyLoops(String code) {
+        Matcher matcher = EMPTY_LOOP_PATTERN.matcher(code);
+        List<Integer> indexes = new ArrayList<>();
+        while (matcher.find()) {
+            indexes.add(matcher.start());
+        }
+        return indexes;
     }
 }

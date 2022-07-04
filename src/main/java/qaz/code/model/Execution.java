@@ -2,12 +2,18 @@ package qaz.code.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Execution {
     private int pointer;
     private final int size;
     private final int maximumOperations;
     private int operations;
+    
+    public int getOperations() {
+        return operations;
+    }
+    
     private final byte[] memory;
 
     public byte[] getMemory() {
@@ -52,6 +58,8 @@ public class Execution {
         long start = System.currentTimeMillis();
         try {
             if (!Analyzer.isBalanced(s)) throw new ExecutionException("Brackets are not balanced");
+            List<Integer> emptyLoops = Analyzer.findEmptyLoops(s);
+            if (!emptyLoops.isEmpty()) throw new ExecutionException("Empty loops found at character " + emptyLoops.stream().map(String::valueOf).collect(Collectors.joining(", ")));
             
             int c = 0;
             ArrayList<List<Character>> output = new ArrayList<>();
@@ -63,6 +71,7 @@ public class Execution {
                 if (s.charAt(i) == '>') {
                     if (pointer == (size - 1)) {
                         pointer = 0;
+                        loopOperation();
                     }
                     else {
                         pointer++;
@@ -73,6 +82,7 @@ public class Execution {
                     if (pointer == 0) {
                         // Wraps to right
                         pointer = size - 1;
+                        loopOperation();
                     }
                     else {
                         pointer--;
@@ -106,6 +116,7 @@ public class Execution {
                 }
                 // [ jumps past the matching ] if the cell under the pointer is 0
                 else if (s.charAt(i) == '[') {
+                    loopOperation();
                     if (memory[pointer] == 0) {
                         loopOperation();
                         i++;
@@ -123,6 +134,7 @@ public class Execution {
                 }
                 // ] jumps back to the matching [ if the cell under the pointer is nonzero
                 else if (s.charAt(i) == ']') {
+                    loopOperation();
                     if (memory[pointer] != 0) {
                         loopOperation();
                         i--;
@@ -162,7 +174,7 @@ public class Execution {
             this.maximumOperations = maximumOperations;
         }
 
-        public static final Profile DEFAULT = new Profile(30_000, 1_000);
+        public static final Profile DEFAULT = new Profile(30_000, 5_000);
     }
 
     public abstract static class Result {

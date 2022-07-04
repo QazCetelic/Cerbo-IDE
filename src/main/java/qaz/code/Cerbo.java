@@ -1,5 +1,6 @@
 package qaz.code;
 
+import com.github.mouse0w0.darculafx.DarculaFX;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -24,6 +25,8 @@ public class Cerbo extends Application {
         mainStage = stage;
         stage.setTitle("Cerbo IDE");
         Scene scene = new Scene(mainPane, 800, 500);
+//        DarculaFX.applyDarculaStyle(scene);
+        scene.getStylesheets().add(getClass().getResource("/darcula.css").toExternalForm());
         scene.getStylesheets().add(getClass().getResource("/stylesheet.css").toExternalForm());
         changeTitle();
         scene.getAccelerators().put(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN), () -> {

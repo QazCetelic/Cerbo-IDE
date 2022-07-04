@@ -1,34 +1,27 @@
-.code-area {
-    -fx-background-color: #f0f0f0;
+* {
+    -fx-tab-size: 4;
 }
 
-/*.lineno {
-    -fx-background-color: #f0f0f0;
-}*/
-
-.field-arithmatic {
-    -fx-fill: #824082;
-    -fx-font-weight: bolder;
+.code-area > * {
+    -fx-highlight-fill: #000000;
+    -fx-highlight-text-fill: #FFFFFF;
 }
 
-.pointer-arithmatic {
-    -fx-fill: darkgreen;
-    -fx-font-weight: bolder;
+.code-area:editable:focused {
+    /* Disable selection effect */
+    -fx-background-color: transparent;
+    /*-fx-background-insets: 0, 0, 0, 0, 0;*/
+    /*-fx-background-radius: 0, 0, 0, 0, 0;*/
 }
 
-.loop {
-    -fx-fill: #BB9F06;
-    -fx-font-weight: bolder;
-}
-
-.input-output {
-    -fx-fill: #087F8C;
-    -fx-font-weight: bolder;
-}
-
-.comment {
-    -fx-fill: grey;
-    -fx-font-style: italic;
+.lineno {
+    -fx-background-color: transparent;
+    -fx-border-width: 0 3 0 0;
+    /* Prevent border from overlapping */
+    -fx-border-insets: 0.5, 0, 0.5, 0;
+    -fx-border-color: hsba(0, 0%, 100%, 0.1);
+    -fx-background-size: auto 100%;
+    -fx-background-insets: 0, 0, 99999999, 0;
 }
 
 #output-octal {
@@ -50,9 +43,14 @@
     -fx-font-size: 14;
 }
 
-#output-error {
+.output-error {
     -fx-text-fill: red;
     -fx-font-style: italic;
+}
+
+.output-seperator {
+    -fx-text-fill: hsb(0, 0%, 50%);
+    -fx-translate-y: -0.075em; /* Vertically center */
 }
 
 .memory-grid {
@@ -66,11 +64,67 @@
     -fx-font-size: 14;
 }
 
-#memory-data-empty {
+.memory-field {
     -fx-font-family: monospace;
 }
 
-#memory-data-filled {
-    -fx-font-family: monospace;
+.memory-field:hover {
+    -fx-background-color: grey;
+    -fx-background-radius: 5;
+    -fx-text-fill: white;
+}
+
+.memory-field-filled {
     -fx-font-weight: bolder;
+}
+
+.memory-field-char {
+    -fx-font-style: italic;
+}
+
+/* Highlighting for everything that isn't a comment */
+.highlight-code {
+    -fx-font-family: monospace;
+
+    /* Mitigation of small operators */
+    -fx-font-weight: bolder;
+}
+
+.highlight-code:hover {
+    -fx-underline: true;
+}
+
+.highlight-field-arithmatic {
+    -fx-fill: #8875a5;
+}
+
+.highlight-pointer-arithmatic {
+    -fx-fill: #c97630;
+}
+
+.highlight-loop {
+    -fx-fill: #e7be65;
+}
+
+.highlight-io {
+    -fx-fill: #6897bb;
+    -fx-stroke-radius: 5;
+
+    /* Mitigation of small operators */
+    -fx-scale-y: 1.5; /* Make operators 50% larger */
+    -fx-translate-y: -0.5em; /* Vertically center */
+}
+
+.highlight-comment {
+    -fx-fill: hsb(0, 0%, 65%);
+    -fx-font-style: italic;
+}
+
+.highlight-bracket-unbalanced {
+    -fx-fill: red;
+}
+
+#no-output {
+    -fx-font-style: italic;
+    -fx-opacity: 0.5;
 }

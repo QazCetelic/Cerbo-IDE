@@ -1,1 +1,2 @@
-icon from ruDALL-E (rudalle.ru)
+icon by ruDALL-E: rudalle.ru
+theme by mouse0w0: https://github.com/mouse0w0/darculafx

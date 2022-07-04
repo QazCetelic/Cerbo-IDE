@@ -9,12 +9,14 @@ import qaz.code.model.ExecutionManager;
 import qaz.code.view.CodePane;
 import qaz.code.view.MemoryPane;
 import qaz.code.view.OutputPane;
+import qaz.code.view.Highlighter;
 
 import java.util.ArrayList;
 
 public class Sheet extends BorderPane {
-    // Execution of code
+    // TODO don't have these classes for individual sheets but for the whole application
     private final ExecutionManager executionManager = new ExecutionManager();
+    private final Highlighter highlighter = new Highlighter();
     private Execution lastExecution;
 
     public Execution getLastExecution() {
@@ -38,7 +40,7 @@ public class Sheet extends BorderPane {
         setBottom(inputField);
         setTop(outputPane);
         
-        outputPane.maxWidthProperty().bind(widthProperty());
+        outputPane.maxWidthProperty().bind(maxWidthProperty());
         DoubleBinding memoryPaneWidth = widthProperty().multiply(0.25);
         memoryPane.maxWidthProperty().bind(memoryPaneWidth);
         memoryPane.prefWidthProperty().bind(memoryPaneWidth);
@@ -55,11 +57,14 @@ public class Sheet extends BorderPane {
             if (result instanceof Execution.Succes) {
                 outputPane.setOutput(result.toString());
                 codePane.showResults(((Execution.Succes) result).output);
+                // Only display memory if execution succeeded
+                memoryPane.displayMemory(execution);
             }
             if (result instanceof Execution.Failure) {
                 outputPane.setError(((Execution.Failure) result).error);
+                // Display failure in memory pane
+                memoryPane.invalidate();
             }
-            memoryPane.displayMemory(execution);
         });
     }
 
@@ -69,6 +74,6 @@ public class Sheet extends BorderPane {
         ArrayList<Character> input = new ArrayList<>();
         for (char c : inputField.getText().toCharArray()) input.add(c);
     
-        executionManager.execute(code, input, this);
+        executionManager.process(code, input, this);
     }
 }
