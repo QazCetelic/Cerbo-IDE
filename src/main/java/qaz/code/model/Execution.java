@@ -170,7 +170,7 @@ public class Execution {
             this.maximumOperations = maximumOperations;
         }
 
-        public static final Profile DEFAULT = new Profile(30_000, 5_000);
+        public static final Profile DEFAULT = new Profile(30_000, 512_000);
     }
     
     @Override
