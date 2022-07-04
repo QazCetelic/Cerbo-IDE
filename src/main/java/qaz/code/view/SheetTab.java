@@ -1,14 +1,15 @@
 package qaz.code.view;
 
 import javafx.scene.control.Tab;
-import qaz.code.Sheet;
+import qaz.code.model.Sheet;
 
 public class SheetTab extends Tab {
-    public SheetTab(String name, String content) {
-        super(name, new Sheet(content));
+    public SheetTab(Sheet sheet) {
+        super(sheet.nameProperty().get(), null);
+        setContent(new SheetView(sheet));
     }
 
-    public Sheet getSheet() {
-        return (Sheet) getContent();
+    public SheetView getSheetView() {
+        return (SheetView) getContent();
     }
 }

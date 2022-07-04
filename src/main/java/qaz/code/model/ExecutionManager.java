@@ -1,19 +1,29 @@
 package qaz.code.model;
 
-import qaz.code.Sheet;
-
-import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class ExecutionManager {
+    public static final ExecutionManager INSTANCE = new ExecutionManager();
     private int lastExecutionCodeHash = 0;
     private int lastExecutionInputHash = 0;
     private Thread executionThread;
     private Thread killThread;
 
-    public void process(String code, ArrayList<Character> input, Sheet sheet) {
-        // Remove everything that isn't an instruction or newline
-        final String cleanedCode = code.replaceAll("^[-+,.\\[\\]><\n]", "");
+    public void process(Sheet sheet) {
+        final String codeWithComments = sheet.codeProperty().get();
+        final String cleanedCode = codeWithComments
+                // Remove everything that isn't an instruction or newline
+                .replaceAll("[^-+,.\\[\\]><\n]", "")
+                // Trim start
+                .replaceAll("^\s+", "")
+                // Trim end
+                .replaceAll("\s+$", "");
+        final List<Character> input = new ArrayList<>() {{
+            for (char c : sheet.inputProperty().get().toCharArray()) add(c);
+        }};
         
         if (cleanedCode.hashCode() != lastExecutionCodeHash || input.hashCode() != lastExecutionInputHash) {
             lastExecutionCodeHash = cleanedCode.hashCode();
@@ -31,10 +41,8 @@ public class ExecutionManager {
                 // Create execution machine
                 Execution execution = new Execution(Execution.Profile.DEFAULT);
                 // Execute code
-                System.out.println("A " + Instant.now().getEpochSecond());
-                Execution.Result result = execution.interpret(cleanedCode, input);
-                System.out.println("B " + Instant.now().getEpochSecond());
-                sheet.setResult(result, execution);
+                Result result = execution.interpret(cleanedCode, input);
+                sheet.lastResultProperty().set(result);
             });
             // And start it
             executionThread.start();

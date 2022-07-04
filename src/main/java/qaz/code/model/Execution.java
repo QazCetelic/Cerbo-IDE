@@ -51,10 +51,7 @@ public class Execution {
         }
     }
 
-    public Result interpret(String s, ArrayList<Character> input) {
-        // Remove everything that isn't an instruction or newline
-        s = s.replaceAll("[^><\\[\\],.\n+-]", "");
-
+    public Result interpret(String s, List<Character> input) {
         long start = System.currentTimeMillis();
         try {
             if (!Analyzer.isBalanced(s)) throw new ExecutionException("Brackets are not balanced");
@@ -66,7 +63,6 @@ public class Execution {
             ArrayList<Character> lineOutput = new ArrayList<>();
 
             for (int i = 0; i < s.length(); i++) {
-                System.out.println("Operations: " + operations);
                 // > moves the pointer to the right
                 if (s.charAt(i) == '>') {
                     if (pointer == (size - 1)) {
@@ -156,12 +152,12 @@ public class Execution {
                 output.add(lineOutput);
             }
             long end = System.currentTimeMillis();
-            return new Succes(output, (end - start));
+            return new Result.Succes(output, (end - start), this);
         }
         catch (ExecutionException e) {
             System.err.println(e.getMessage());
             long end = System.currentTimeMillis();
-            return new Failure(e.getMessage(), (end - start));
+            return new Result.Failure(e.getMessage(), (end - start), this);
         }
     }
 
@@ -176,46 +172,7 @@ public class Execution {
 
         public static final Profile DEFAULT = new Profile(30_000, 5_000);
     }
-
-    public abstract static class Result {
-        public final long duration;
-        public Result(long duration) {
-            this.duration = duration;
-        }
-    }
-
-    public static class Succes extends Result {
-        public final List<List<Character>> output;
-        public Succes(List<List<Character>> output, long duration) {
-            super(duration);
-            this.output = output;
-        }
-
-        @Override
-        public String toString() {
-            StringBuilder sb = new StringBuilder();
-            for (List<Character> characters : output) {
-                for (Character character : characters) {
-                    sb.append(character);
-                }
-            }
-            return sb.toString();
-        }
-    }
-
-    public static class Failure extends Result {
-        public final String error;
-        public Failure(String error, long duration) {
-            super(duration);
-            this.error = error;
-        }
-
-        @Override
-        public String toString() {
-            return error;
-        }
-    }
-
+    
     @Override
     public String toString() {
         return super.toString();

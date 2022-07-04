@@ -1,6 +1,7 @@
 package qaz.code.view;
 
 import javafx.scene.control.TabPane;
+import qaz.code.model.Sheet;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -13,7 +14,8 @@ public class SheetsPane extends TabPane {
     }
 
     public void addEmptySheet() {
-        addSheet(new SheetTab(getUsableName(), ""));
+        Sheet sheet = new Sheet(getUsableName());
+        addSheet(new SheetTab(sheet));
     }
 
     private String getUsableName() {

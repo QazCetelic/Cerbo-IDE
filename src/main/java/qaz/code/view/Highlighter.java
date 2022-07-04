@@ -11,9 +11,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Highlighter {
+    public static final Highlighter INSTANCE = new Highlighter();
     public static final Pattern PATTERN = Pattern.compile("(?<FIELD>[-+])|(?<POINTER>[><])|(?<IO>[,.])|(?<LOOP>[]\\[])|(?<COMMENT>.+?)");
     
-    public Highlighter() {
+    private Highlighter() {
     
     }
     

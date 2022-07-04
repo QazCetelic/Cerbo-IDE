@@ -14,6 +14,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
+import qaz.code.model.Sheet;
 
 import java.util.*;
 import java.util.function.IntFunction;
@@ -21,12 +22,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CodePane extends BorderPane {
-    private final Highlighter highlighter = new Highlighter();
+    private final Highlighter highlighter = Highlighter.INSTANCE;
     public final CodeArea codeArea;
     public ScrollPane resultsPane;
+    private final Sheet sheet;
     
-    public CodePane(String code) {
-        codeArea = new CodeArea(code);
+    public CodePane(Sheet sheet) {
+        this.sheet = sheet;
+        codeArea = new CodeArea(sheet.codeProperty().get());
         codeArea.getStyleClass().add("text-area");
         resultsPane = new ScrollPane();
         setRight(resultsPane);
@@ -38,6 +41,9 @@ public class CodePane extends BorderPane {
         codeArea.setLineHighlighterFill(Color.hsb(0, 0, 1, 0.1));
         codeArea.setLineHighlighterOn(true);
         codeArea.getVisibleParagraphs().addModificationObserver(new VisibleParagraphStyler<>(codeArea, Highlighter::computeHighlighting));
+        codeArea.textProperty().addListener((observable, oldValue, newValue) -> {
+            sheet.codeProperty().set(newValue);
+        });
     
         DoubleBinding resultWidthRestriction = widthProperty().multiply(0.20);
         resultsPane.maxWidthProperty().bind(resultWidthRestriction);
