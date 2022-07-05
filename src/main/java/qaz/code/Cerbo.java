@@ -1,6 +1,5 @@
 package qaz.code;
 
-import com.github.mouse0w0.darculafx.DarculaFX;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;

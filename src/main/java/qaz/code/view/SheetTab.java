@@ -6,10 +6,10 @@ import qaz.code.model.Sheet;
 public class SheetTab extends Tab {
     public SheetTab(Sheet sheet) {
         super(sheet.nameProperty().get(), null);
-        setContent(new SheetView(sheet));
+        setContent(new SheetPane(sheet));
     }
 
-    public SheetView getSheetView() {
-        return (SheetView) getContent();
+    public SheetPane getSheetView() {
+        return (SheetPane) getContent();
     }
 }

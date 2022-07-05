@@ -4,17 +4,17 @@ import javafx.application.Platform;
 import javafx.beans.binding.DoubleBinding;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
-import qaz.code.model.Sheet;
 import qaz.code.model.Result;
+import qaz.code.model.Sheet;
 
-public class SheetView extends BorderPane {
+public class SheetPane extends BorderPane {
     private final Sheet sheet;
     private final CodePane codePane;
     private final MemoryPane memoryPane;
     private final TextField inputField;
     private final OutputPane outputPane;
     
-    public SheetView(Sheet sheet) {
+    public SheetPane(Sheet sheet) {
         this.sheet = sheet;
         codePane = new CodePane(sheet);
         memoryPane = new MemoryPane();
@@ -32,25 +32,22 @@ public class SheetView extends BorderPane {
         memoryPane.prefWidthProperty().bind(memoryPaneWidth);
         
         inputField.setPromptText("Input");
-        sheet.inputProperty().bindBidirectional(inputField.textProperty());
+        sheet.inputProperty().bind(inputField.textProperty());
         
-        sheet.lastResultProperty().addListener((observable, oldValue, newValue) -> showResult(newValue));
+        sheet.lastResultProperty().addListener((observable, oldValue, newValue) -> Platform.runLater(() -> showResult(newValue)));
     }
     
     private void showResult(Result result) {
-        // Ensures JavaFX thread is used for modifying UI
-        Platform.runLater(() -> {
-            if (result instanceof Result.Succes) {
-                outputPane.setOutput(result.toString());
-                codePane.showResults(((Result.Succes) result).output);
-                // Only display memory if execution succeeded
-                memoryPane.displayMemory(result.execution);
-            }
-            if (result instanceof Result.Failure) {
-                outputPane.setError(((Result.Failure) result).error);
-                // Display failure in memory pane
-                memoryPane.invalidate();
-            }
-        });
+        if (result instanceof Result.Succes) {
+            outputPane.setOutput(result.toString());
+            codePane.showResults(((Result.Succes) result).output);
+            // Only update memory view if execution succeeded
+            memoryPane.displayMemory(result.execution);
+        }
+        if (result instanceof Result.Failure) {
+            outputPane.setError(((Result.Failure) result).error);
+            // Display failure in memory pane
+            memoryPane.invalidate();
+        }
     }
 }

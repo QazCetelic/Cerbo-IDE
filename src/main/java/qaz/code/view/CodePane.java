@@ -17,7 +17,8 @@ import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import qaz.code.model.Sheet;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.IntFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -34,7 +35,7 @@ public class CodePane extends BorderPane {
         resultsPane = new ScrollPane();
         setRight(resultsPane);
         resultsPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
-        resultsPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        resultsPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
         setCenter(codeArea);
         IntFunction<Node> lineNumber = LineNumberFactory.get(codeArea);
         codeArea.setParagraphGraphicFactory(lineNumber);
@@ -44,7 +45,13 @@ public class CodePane extends BorderPane {
         codeArea.textProperty().addListener((observable, oldValue, newValue) -> {
             sheet.codeProperty().set(newValue);
         });
-    
+        
+        // Sync scrolling from code area to results pane, not bidirectional
+        codeArea.estimatedScrollYProperty().addListener((observable, oldValue, newValue) -> {
+            // *3 is necessary for some unknown reason
+            resultsPane.setVvalue(newValue / codeArea.getTotalHeightEstimate() * 3);
+        });
+        
         StringBinding lineNumberBinding = Bindings.createStringBinding(() -> {
             int line = codeArea.currentParagraphProperty().getValue() + 1;
             int column = codeArea.caretColumnProperty().getValue();
@@ -75,7 +82,7 @@ public class CodePane extends BorderPane {
     
     // TODO use byte[] as parameter
     public void showResults(List<List<Character>> results) {
-        VBox rows = new VBox();
+        VBox rows = new VBox(0);
         int index = -1;
         for (List<Character> result : results) {
             // Add output for line...

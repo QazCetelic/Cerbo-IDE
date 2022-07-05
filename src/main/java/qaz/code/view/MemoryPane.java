@@ -2,13 +2,15 @@ package qaz.code.view;
 
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.control.*;
+import javafx.scene.control.Hyperlink;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import qaz.code.model.Execution;
 
 public class MemoryPane extends BorderPane {
-    private static final int MINIMUM_ENTRIES = 64;
     private static final double SCROLL_BAR_WIDTH = 5;
     private final ScrollPane scrollPane;
     
