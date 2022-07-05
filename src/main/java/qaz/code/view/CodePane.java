@@ -1,63 +1,44 @@
 package qaz.code.view;
 
-import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.binding.StringBinding;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import org.fxmisc.richtext.CodeArea;
-import org.fxmisc.richtext.LineNumberFactory;
 import qaz.code.model.Sheet;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.IntFunction;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class CodePane extends BorderPane {
-    public final CodeArea codeArea;
+    public final CodeView codeView;
     public ScrollPane resultsPane;
     private final Sheet sheet;
     
     public CodePane(Sheet sheet) {
         this.sheet = sheet;
-        codeArea = new CodeArea(sheet.codeProperty().get());
-        codeArea.getStyleClass().add("text-area");
+        codeView = new CodeView(sheet);
         resultsPane = new ScrollPane();
         setRight(resultsPane);
         resultsPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
         resultsPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
-        setCenter(codeArea);
-        IntFunction<Node> lineNumber = LineNumberFactory.get(codeArea);
-        codeArea.setParagraphGraphicFactory(lineNumber);
-        codeArea.setLineHighlighterFill(Color.hsb(0, 0, 1, 0.1));
-        codeArea.setLineHighlighterOn(true);
-        codeArea.getVisibleParagraphs().addModificationObserver(new VisibleParagraphStyler<>(codeArea, Highlighter::computeHighlighting));
-        codeArea.textProperty().addListener((observable, oldValue, newValue) -> {
-            sheet.codeProperty().set(newValue);
-        });
+        setCenter(codeView);
         
         // Sync scrolling from code area to results pane, not bidirectional
-        codeArea.estimatedScrollYProperty().addListener((observable, oldValue, newValue) -> {
+        codeView.estimatedScrollYProperty().addListener((observable, oldValue, newValue) -> {
             // *3 is necessary for some unknown reason
-            resultsPane.setVvalue(newValue / codeArea.getTotalHeightEstimate() * 3);
+            resultsPane.setVvalue(newValue / codeView.getTotalHeightEstimate() * 3);
         });
         
         StringBinding lineNumberBinding = Bindings.createStringBinding(() -> {
-            int line = codeArea.currentParagraphProperty().getValue() + 1;
-            int column = codeArea.caretColumnProperty().getValue();
+            int line = codeView.currentParagraphProperty().getValue() + 1;
+            int column = codeView.caretColumnProperty().getValue();
             
             return line + ":" + column;
-        }, codeArea.currentParagraphProperty(), codeArea.caretColumnProperty());
+        }, codeView.currentParagraphProperty(), codeView.caretColumnProperty());
         
         Label lineNumberLabel = new Label();
         lineNumberLabel.textProperty().bind(lineNumberBinding);
@@ -67,17 +48,6 @@ public class CodePane extends BorderPane {
         resultsPane.maxWidthProperty().bind(resultWidthRestriction);
         resultsPane.prefWidthProperty().bind(resultWidthRestriction);
         showResults(new ArrayList<>()); // Trigger initial layout
-        
-        // auto-indent: insert previous line's indents on enter
-        final Pattern whiteSpace = Pattern.compile("^\\s+");
-        codeArea.addEventHandler(KeyEvent.KEY_PRESSED, keyEvent -> {
-            if (keyEvent.getCode() == KeyCode.ENTER) {
-                int caretPosition = codeArea.getCaretPosition();
-                int currentParagraph = codeArea.getCurrentParagraph();
-                Matcher m0 = whiteSpace.matcher(codeArea.getParagraph(currentParagraph - 1).getSegments().get(0));
-                if (m0.find()) Platform.runLater(() -> codeArea.insertText(caretPosition, m0.group()));
-            }
-        });
     }
     
     // TODO use byte[] as parameter
