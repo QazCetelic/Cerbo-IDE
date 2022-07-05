@@ -1,7 +1,9 @@
 package qaz.code.model;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -22,6 +24,7 @@ public class Analyzer {
         return count == 0;
     }
     
+    public static final Set<Character> OPERATORS = new HashSet<>(List.of('+', '-', '<', '>', '[', ']', '.', ','));
     private static final Pattern EMPTY_LOOP_PATTERN = Pattern.compile("\\[[^]\\[.,><+-]*]");
     
     /**

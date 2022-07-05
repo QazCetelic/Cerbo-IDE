@@ -8,6 +8,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import qaz.code.model.Analyzer;
 import qaz.code.model.Sheet;
 
 import java.util.ArrayList;
@@ -36,13 +37,31 @@ public class CodePane extends BorderPane {
         StringBinding lineNumberBinding = Bindings.createStringBinding(() -> {
             int line = codeView.currentParagraphProperty().getValue() + 1;
             int column = codeView.caretColumnProperty().getValue();
-            
             return line + ":" + column;
         }, codeView.currentParagraphProperty(), codeView.caretColumnProperty());
-        
         Label lineNumberLabel = new Label();
         lineNumberLabel.textProperty().bind(lineNumberBinding);
-        setBottom(lineNumberLabel);
+        
+        StringBinding selectionBinding = Bindings.createStringBinding(() -> {
+            int chars = codeView.getSelection().getLength();
+            int newLines = 0;
+            int operators = 0;
+            for (char c : codeView.getSelectedText().toCharArray()) {
+                if (c == '\n') {
+                    newLines++;
+                }
+                else if (Analyzer.OPERATORS.contains(c)) {
+                    operators++;
+                }
+            }
+            if (chars == 0) return "";
+            else return "Selected " + chars + " characters (" + newLines + " newlines, " + operators + " operators)";
+        }, codeView.selectionProperty());
+        Label selectionLabel = new Label();
+        selectionLabel.textProperty().bind(selectionBinding);
+        
+        HBox infoBox = new HBox(25, lineNumberLabel, selectionLabel);
+        setBottom(infoBox);
     
         DoubleBinding resultWidthRestriction = widthProperty().multiply(0.20);
         resultsPane.maxWidthProperty().bind(resultWidthRestriction);
