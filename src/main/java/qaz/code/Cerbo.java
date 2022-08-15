@@ -1,12 +1,15 @@
 package qaz.code;
 
 import javafx.application.Application;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.stage.Stage;
+import qaz.code.model.Sheet;
 import qaz.code.view.MainPane;
 
 import java.util.Objects;
@@ -14,6 +17,12 @@ import java.util.Objects;
 public class Cerbo extends Application {
     private MainPane mainPane;
     private Stage mainStage;
+    private static final ObjectProperty<Sheet> selectedSheet = new SimpleObjectProperty<>();
+    
+    public static ObjectProperty<Sheet> selectedSheetProperty() {
+        return selectedSheet;
+    }
+    
     public static void main(String[] args) {
         launch(args);
     }

@@ -1,6 +1,7 @@
 package qaz.code.view;
 
 import javafx.application.Platform;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
@@ -25,15 +26,18 @@ public class CodeView extends CodeArea {
         // Syntax highlighting for visible lines of code
         getVisibleParagraphs().addModificationObserver(new VisibleParagraphStyler<>(this, Highlighter::computeHighlighting));
         // Sync code with model
-        textProperty().addListener((observable, oldValue, newValue) -> sheet.codeProperty().set(newValue));
+        ObservableValue<String> textProperty = textProperty();
+        sheet.codeProperty().bind(textProperty);
+//        textProperty().addListener((observable, oldValue, newValue) -> sheet.codeProperty().set(newValue));
+        
     
         // Auto-indent: insert previous line's indents on enter TODO: check if this works
         addEventHandler(KeyEvent.KEY_PRESSED, keyEvent -> {
             if (keyEvent.getCode() == KeyCode.ENTER) {
                 int caretPosition = getCaretPosition();
                 int currentParagraph = getCurrentParagraph();
-                Matcher m0 = WHITE_SPACE.matcher(getParagraph(currentParagraph - 1).getSegments().get(0));
-                if (m0.find()) Platform.runLater(() -> insertText(caretPosition, m0.group()));
+                Matcher whitespaceMatcher = WHITE_SPACE.matcher(getParagraph(currentParagraph - 1).getSegments().get(0));
+                if (whitespaceMatcher.find()) Platform.runLater(() -> insertText(caretPosition, whitespaceMatcher.group()));
             }
         });
     }

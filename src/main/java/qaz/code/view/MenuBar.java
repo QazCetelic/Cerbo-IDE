@@ -4,13 +4,13 @@ import javafx.beans.property.BooleanProperty;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
+import qaz.code.Cerbo;
 
 // TODO split menu's into seperate classes
 public class MenuBar extends javafx.scene.control.MenuBar {
     
     private final MenuItem save;
     private final MenuItem load;
-    private final MenuItem minify;
     private final BooleanProperty showMemoryView;
     public BooleanProperty showMemoryViewProperty() {
         return showMemoryView;
@@ -37,7 +37,8 @@ public class MenuBar extends javafx.scene.control.MenuBar {
         load = new MenuItem("Load");
         file.getItems().addAll(save, load);
         Menu edit = new Menu("Edit");
-        minify = new MenuItem("Minify");
+        MenuItem minify = new MenuItem("Minify");
+        minify.setOnAction(e -> Cerbo.selectedSheetProperty().get().minify(50));
         edit.getItems().addAll(minify);
         Menu view = new Menu("View");
         RadioMenuItem memoryView = new RadioMenuItem("Memory view");
