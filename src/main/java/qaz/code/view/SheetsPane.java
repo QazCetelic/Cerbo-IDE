@@ -3,14 +3,19 @@ package qaz.code.view;
 import javafx.scene.control.TabPane;
 import qaz.code.Cerbo;
 import qaz.code.model.Sheet;
+import qaz.code.model.Sheets;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class SheetsPane extends TabPane {
-    public SheetsPane() {
+    public SheetsPane(Sheets sheets) {
         getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            SheetTab tab = getSelectedSheetTab();
-            Cerbo.selectedSheetProperty().set(tab.getSheet());
+            SheetTab tab = (SheetTab) newValue;
+            if (tab != null) sheets.select(tab.getSheet());
+        });
+        sheets.sheetsProperty().addListener((observable, oldValue, newValue) -> {
+            getTabs().clear();
+            getTabs().addAll(newValue.stream().map(SheetTab::new).toList());
         });
     }
     public void addSheet(SheetTab sheetTab) {

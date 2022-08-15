@@ -5,12 +5,12 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
 import qaz.code.Cerbo;
+import qaz.code.model.Sheet;
+import qaz.code.model.Sheets;
 
 // TODO split menu's into seperate classes
 public class MenuBar extends javafx.scene.control.MenuBar {
     
-    private final MenuItem save;
-    private final MenuItem load;
     private final BooleanProperty showMemoryView;
     public BooleanProperty showMemoryViewProperty() {
         return showMemoryView;
@@ -31,14 +31,21 @@ public class MenuBar extends javafx.scene.control.MenuBar {
         return showGeneralOutputView;
     }
     
-    public MenuBar() {
+    public MenuBar(Sheets sheets) {
         Menu file = new Menu("File");
-        save = new MenuItem("Save");
-        load = new MenuItem("Load");
+        MenuItem save = new MenuItem("Save");
+        save.setOnAction(e -> sheets.selectedSheetProperty().get().save());
+        MenuItem load = new MenuItem("Load");
+        load.setOnAction(e -> {
+            Sheet loadedSheet = Sheet.load();
+            if (loadedSheet != null) {
+                sheets.select(loadedSheet);
+            }
+        });
         file.getItems().addAll(save, load);
         Menu edit = new Menu("Edit");
         MenuItem minify = new MenuItem("Minify");
-        minify.setOnAction(e -> Cerbo.selectedSheetProperty().get().minify(50));
+        minify.setOnAction(e -> sheets.selectedSheetProperty().get().minify(50));
         edit.getItems().addAll(minify);
         Menu view = new Menu("View");
         RadioMenuItem memoryView = new RadioMenuItem("Memory view");

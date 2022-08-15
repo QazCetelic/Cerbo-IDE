@@ -31,7 +31,9 @@ public class CodeView extends CodeArea {
         sheet.codeProperty().addListener((observable, oldValue, newValue) -> {
             // Only set when it's not the same already to prevent infinite loops
             if (!newValue.equals(getText())) replaceText(newValue);
+            triggerHighlight();
         });
+        triggerHighlight();
     
         // Auto-indent: insert previous line's indents on enter TODO: check if this works
         addEventHandler(KeyEvent.KEY_PRESSED, keyEvent -> {
@@ -42,5 +44,9 @@ public class CodeView extends CodeArea {
                 if (whitespaceMatcher.find()) Platform.runLater(() -> insertText(caretPosition, whitespaceMatcher.group()));
             }
         });
+    }
+    
+    public void triggerHighlight() {
+        setStyleSpans(0, Highlighter.computeHighlighting(getText()));
     }
 }

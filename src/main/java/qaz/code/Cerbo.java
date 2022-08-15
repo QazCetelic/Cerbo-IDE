@@ -1,27 +1,28 @@
 package qaz.code;
 
 import javafx.application.Application;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.stage.Stage;
-import qaz.code.model.Sheet;
+import qaz.code.model.Sheets;
 import qaz.code.view.MainPane;
+import qaz.code.view.SheetTab;
 
 import java.util.Objects;
 
 public class Cerbo extends Application {
     private MainPane mainPane;
-    private Stage mainStage;
-    private static final ObjectProperty<Sheet> selectedSheet = new SimpleObjectProperty<>();
+    private static Stage mainStage;
     
-    public static ObjectProperty<Sheet> selectedSheetProperty() {
-        return selectedSheet;
+    public static Stage getMainStage() {
+        return mainStage;
     }
+    
+    // TODO make non-static
+    public final Sheets sheets = new Sheets();
     
     public static void main(String[] args) {
         launch(args);
@@ -29,7 +30,7 @@ public class Cerbo extends Application {
 
     @Override
     public void start(Stage stage) {
-        mainPane = new MainPane();
+        mainPane = new MainPane(sheets);
         mainStage = stage;
         stage.setTitle("Cerbo IDE");
         Scene scene = new Scene(mainPane, 800, 500);
@@ -49,6 +50,7 @@ public class Cerbo extends Application {
     }
 
     public void changeTitle() {
-        mainStage.setTitle("Cerbo IDE - " + mainPane.getSheetsPane().getSelectedSheetTab().getText());
+        SheetTab tab = mainPane.getSheetsPane().getSelectedSheetTab();
+        mainStage.setTitle("Cerbo IDE - " + (tab != null ? tab.getText() : "None"));
     }
 }

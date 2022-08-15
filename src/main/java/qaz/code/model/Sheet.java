@@ -4,9 +4,19 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.scene.control.Dialog;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.FileChooser;
+import javafx.stage.Popup;
+import org.jetbrains.annotations.Nullable;
+import qaz.code.Cerbo;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Arrays;
+import java.util.Scanner;
 
 public class Sheet extends BorderPane {
     // TODO don't have these classes for individual sheets but for the whole application
@@ -70,5 +80,60 @@ public class Sheet extends BorderPane {
         boolean changed = Arrays.hashCode(newCode.toCharArray()) != startingHash;
         codeProperty.set(newCode);
         return changed;
+    }
+    
+    /**
+     * Save sheet to file
+     */
+    public void save() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Brainfuck Code", "*.bf"));
+        File chosenFile = fileChooser.showSaveDialog(Cerbo.getMainStage());
+        if (chosenFile == null) return; // Cancel if no file was chosen
+        try {
+            // Ensure file has .bf extension
+            if (!chosenFile.getName().endsWith(".bf")) {
+                chosenFile = new File(chosenFile.getParent(), chosenFile.getName() + ".bf");
+            }
+            FileWriter writer = new FileWriter(chosenFile);
+            writer.write(codeProperty.get());
+            writer.close(); // TODO close when exception occurs
+        }
+        catch (IOException e) {
+            Dialog<String> dialog = new Dialog<>();
+            dialog.setTitle("Failed to save file");
+            dialog.setContentText(e.getLocalizedMessage());
+            dialog.show();
+        }
+    }
+    
+    /**
+     * Load a sheet from file
+     */
+    public static @Nullable Sheet load() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Load");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Brainfuck Code", "*.bf"));
+        File chosenFile = fileChooser.showOpenDialog(Cerbo.getMainStage());
+        try {
+            StringBuilder sb = new StringBuilder();
+            Scanner reader = new Scanner(chosenFile);
+            while (reader.hasNextLine()) {
+                sb.append(reader.nextLine());
+                sb.append('\n');
+            }
+            reader.close(); // TODO close when exception occurs
+            Sheet sheet = new Sheet(chosenFile.getName());
+            sheet.codeProperty.set(sb.toString());
+            return sheet;
+        }
+        catch (IOException e) {
+            Dialog<String> dialog = new Dialog<>();
+            dialog.setTitle("Failed to load file");
+            dialog.setContentText(e.getLocalizedMessage());
+            dialog.show();
+            return null;
+        }
     }
 }
