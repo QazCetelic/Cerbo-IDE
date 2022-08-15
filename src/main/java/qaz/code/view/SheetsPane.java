@@ -1,5 +1,6 @@
 package qaz.code.view;
 
+import javafx.application.Platform;
 import javafx.scene.control.TabPane;
 import qaz.code.Cerbo;
 import qaz.code.model.Sheet;
@@ -14,8 +15,10 @@ public class SheetsPane extends TabPane {
             if (tab != null) sheets.select(tab.getSheet());
         });
         sheets.sheetsProperty().addListener((observable, oldValue, newValue) -> {
-            getTabs().clear();
-            getTabs().addAll(newValue.stream().map(SheetTab::new).toList());
+            Platform.runLater(() -> {
+                getTabs().clear();
+                getTabs().addAll(newValue.stream().map(SheetTab::new).toList());
+            });
         });
     }
     public void addSheet(SheetTab sheetTab) {
