@@ -56,8 +56,6 @@ public class Sheet extends BorderPane {
      * @return Whether something has changed.
      */
     public boolean minify(Integer maxLineLength) {
-        System.out.println("Minifying " + nameProperty.get());
-        System.out.println("Old code:\n" + codeProperty.get());
         char[] code = codeProperty.get().toCharArray();
         int startingHash = Arrays.hashCode(code);
         int newLineCounter = 0;
@@ -78,6 +76,19 @@ public class Sheet extends BorderPane {
         String newCode = sb.toString();
         System.out.println("New code:\n" + newCode);
         boolean changed = Arrays.hashCode(newCode.toCharArray()) != startingHash;
+        codeProperty.set(newCode);
+        return changed;
+    }
+    
+    /**
+     * Remove empty lines and trailing whitespace.
+     * @return Whether something has changed.
+     */
+    public boolean reduceSpacing() {
+        String newCode = codeProperty.get()
+                                     .replaceAll("\\n{2}", "\n")
+                                     .replaceAll("\\s+$", "");
+        boolean changed = !newCode.equals(codeProperty.get());
         codeProperty.set(newCode);
         return changed;
     }
