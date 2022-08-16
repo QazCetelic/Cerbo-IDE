@@ -21,7 +21,6 @@ public class Cerbo extends Application {
         return mainStage;
     }
     
-    // TODO make non-static
     public final Sheets sheets = new Sheets();
     
     public static void main(String[] args) {

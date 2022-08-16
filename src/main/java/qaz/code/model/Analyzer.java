@@ -24,7 +24,7 @@ public class Analyzer {
         return count == 0;
     }
     
-    public static final Set<Character> OPERATORS = new HashSet<>(List.of('+', '-', '<', '>', '[', ']', '.', ','));
+    public static final Set<Character> OPERATORS = Set.of('+', '-', '<', '>', '[', ']', '.', ',');
     private static final Pattern EMPTY_LOOP_PATTERN = Pattern.compile("\\[[^]\\[.,><+-]*]");
     
     /**

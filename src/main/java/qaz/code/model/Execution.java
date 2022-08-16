@@ -8,10 +8,54 @@ public class Execution {
     private int pointer;
     private final int size;
     private final int maximumOperations;
-    private int operations;
+    
+    private int operationsMoveLeft;
+    private int operationsMoveRight;
+    private int operationsIncrease;
+    private int operationsDecrease;
+    private int operationsLeftLoop;
+    private int operationsRightLoop;
+    private int operationsInput;
+    private int operationsOutput;
     
     public int getOperations() {
-        return operations;
+        return operationsMoveLeft + operationsMoveRight + operationsIncrease + operationsDecrease + operationsLeftLoop + operationsRightLoop + operationsInput + operationsOutput;
+    }
+    
+    public int getOperationsLeftLoop() {
+        return operationsLeftLoop;
+    }
+    
+    public int getOperationsRightLoop() {
+        return operationsRightLoop;
+    }
+    
+    public int getOperationsInput() {
+        return operationsInput;
+    }
+    
+    public int getOperationsOutput() {
+        return operationsOutput;
+    }
+    
+    public int getOperationsMoveLeft() {
+        return operationsMoveLeft;
+    }
+    
+    public int getOperationsMoveRight() {
+        return operationsMoveRight;
+    }
+    
+    public int getOperationsIncrease() {
+        return operationsIncrease;
+    }
+    
+    public int getOperationsDecrease() {
+        return operationsDecrease;
+    }
+    
+    private int getLoopOperations() {
+        return operationsLeftLoop + operationsRightLoop + operationsMoveLeft + operationsMoveRight;
     }
     
     private final byte[] memory;
@@ -44,9 +88,8 @@ public class Execution {
         this.maximumOperations = profile.maximumOperations;
     }
 
-    private void loopOperation() throws ExecutionException {
-        operations++;
-        if (operations >= maximumOperations) {
+    private void checkOperations() throws ExecutionException {
+        if (getLoopOperations() >= maximumOperations) {
             throw new ExecutionException("Infinite loop? Maximum of " + maximumOperations + " looping operations exceeded");
         }
     }
@@ -67,7 +110,8 @@ public class Execution {
                 if (s.charAt(i) == '>') {
                     if (pointer == (size - 1)) {
                         pointer = 0;
-                        loopOperation();
+                        operationsMoveRight++;
+                        checkOperations();
                     }
                     else {
                         pointer++;
@@ -78,7 +122,8 @@ public class Execution {
                     if (pointer == 0) {
                         // Wraps to right
                         pointer = size - 1;
-                        loopOperation();
+                        operationsMoveLeft++;
+                        checkOperations();
                     }
                     else {
                         pointer--;
@@ -112,12 +157,14 @@ public class Execution {
                 }
                 // [ jumps past the matching ] if the cell under the pointer is 0
                 else if (s.charAt(i) == '[') {
-                    loopOperation();
+                    operationsLeftLoop++;
+                    checkOperations();
                     if (memory[pointer] == 0) {
-                        loopOperation();
+                        operationsLeftLoop++;
+                        checkOperations();
                         i++;
                         while (c > 0 || s.charAt(i) != ']') {
-                            loopOperation();
+                            checkOperations();
                             if (s.charAt(i) == '[') {
                                 c++;
                             }
@@ -130,12 +177,15 @@ public class Execution {
                 }
                 // ] jumps back to the matching [ if the cell under the pointer is nonzero
                 else if (s.charAt(i) == ']') {
-                    loopOperation();
+                    operationsRightLoop++;
+                    checkOperations();
                     if (memory[pointer] != 0) {
-                        loopOperation();
+                        operationsRightLoop++;
+                        checkOperations();
                         i--;
                         while (c > 0 || s.charAt(i) != '[') {
-                            loopOperation();
+                            operationsLeftLoop++;
+                            checkOperations();
                             if (s.charAt(i) == ']') {
                                 c++;
                             }
