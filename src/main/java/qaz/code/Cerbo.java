@@ -33,8 +33,10 @@ public class Cerbo extends Application {
         mainStage = stage;
         Scene scene = new Scene(mainPane, 800, 500);
 //        DarculaFX.applyDarculaStyle(scene);
-        scene.getStylesheets().add(getClass().getResource("/darcula.css").toExternalForm());
-        scene.getStylesheets().add(getClass().getResource("/stylesheet.css").toExternalForm());
+        scene.getStylesheets().addAll(
+            getClass().getResource("/darcula.css").toExternalForm(),
+            getClass().getResource("/stylesheet.css").toExternalForm()
+        );
         changeTitle();
         scene.getAccelerators().put(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN), () -> {
             mainPane.getSheetsPane().addEmptySheet();

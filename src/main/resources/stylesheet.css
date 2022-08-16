@@ -5,11 +5,12 @@
     -pointer-arithmatic-color: #c97630;
     -loop-color: #e7be65;
     -io-color: #6897bb;
+
+    -fx-highlight-fill: #646568;
 }
 
 .code-area > * {
-    -fx-highlight-fill: #000000;
-    -fx-highlight-text-fill: #FFFFFF;
+
 }
 
 .code-area:editable:focused {
