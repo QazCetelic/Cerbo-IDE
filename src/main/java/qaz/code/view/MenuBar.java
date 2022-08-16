@@ -4,7 +4,6 @@ import javafx.beans.property.BooleanProperty;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
-import qaz.code.Cerbo;
 import qaz.code.model.Sheet;
 import qaz.code.model.Sheets;
 

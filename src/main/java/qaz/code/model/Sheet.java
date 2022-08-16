@@ -7,12 +7,10 @@ import javafx.beans.property.StringProperty;
 import javafx.scene.control.Dialog;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.FileChooser;
-import javafx.stage.Popup;
 import org.jetbrains.annotations.Nullable;
 import qaz.code.Cerbo;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;

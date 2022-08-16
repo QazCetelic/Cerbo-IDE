@@ -10,7 +10,6 @@ import javafx.stage.Stage;
 import qaz.code.model.Sheet;
 import qaz.code.model.Sheets;
 import qaz.code.view.MainPane;
-import qaz.code.view.SheetTab;
 
 import java.util.Objects;
 

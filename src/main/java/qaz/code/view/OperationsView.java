@@ -1,11 +1,8 @@
 package qaz.code.view;
 
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
-import javafx.beans.binding.ObjectBinding;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.geometry.Side;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
@@ -14,8 +11,6 @@ import qaz.code.model.Result;
 import qaz.code.model.Sheet;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 public class OperationsView extends BorderPane {
     private final PieChart operationsDistributionChart;

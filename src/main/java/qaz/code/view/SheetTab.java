@@ -1,7 +1,6 @@
 package qaz.code.view;
 
 import javafx.scene.control.Tab;
-import qaz.code.Cerbo;
 import qaz.code.model.Sheet;
 import qaz.code.model.Sheets;
 
