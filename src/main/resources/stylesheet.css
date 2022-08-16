@@ -1,5 +1,10 @@
 * {
     -fx-tab-size: 4;
+
+    -field-arithmatic-color: #8875a5;
+    -pointer-arithmatic-color: #c97630;
+    -loop-color: #e7be65;
+    -io-color: #6897bb;
 }
 
 .code-area > * {
@@ -95,19 +100,19 @@
 }
 
 .highlight-field-arithmatic {
-    -fx-fill: #8875a5;
+    -fx-fill: -field-arithmatic-color;
 }
 
 .highlight-pointer-arithmatic {
-    -fx-fill: #c97630;
+    -fx-fill: -pointer-arithmatic-color;
 }
 
 .highlight-loop {
-    -fx-fill: #e7be65;
+    -fx-fill: -loop-color;
 }
 
 .highlight-io {
-    -fx-fill: #6897bb;
+    -fx-fill: -io-color;
     -fx-stroke-radius: 5;
 
     /* Mitigation of small operators */
@@ -128,3 +133,20 @@
     -fx-font-style: italic;
     -fx-opacity: 0.5;
 }
+
+/* Move left */
+.data0.chart-pie { -fx-pie-color: -field-arithmatic-color; }
+/* Move right */
+.data1.chart-pie { -fx-pie-color: -field-arithmatic-color; }
+/* Increase */
+.data2.chart-pie { -fx-pie-color: -pointer-arithmatic-color; }
+/* Decrease */
+.data3.chart-pie { -fx-pie-color: -pointer-arithmatic-color; }
+/* Loop left */
+.data4.chart-pie { -fx-pie-color: -loop-color; }
+/* Loop right */
+.data5.chart-pie { -fx-pie-color: -loop-color; }
+/* Input */
+.data6.chart-pie { -fx-pie-color: -io-color; }
+/* Output */
+.data7.chart-pie { -fx-pie-color: -io-color; }
