@@ -26,14 +26,14 @@ public class CodeView extends CodeArea {
         // Syntax highlighting for visible lines of code
         getVisibleParagraphs().addModificationObserver(new VisibleParagraphStyler<>(this, Highlighter::computeHighlighting));
         // Sync code with model
-        ObservableValue<String> textProperty = textProperty();
-        sheet.codeProperty().bind(textProperty);
+        sheet.codeProperty().bind(textProperty());
         sheet.codeProperty().addListener((observable, oldValue, newValue) -> {
             // Only set when it's not the same already to prevent infinite loops
             if (!newValue.equals(getText())) replaceText(newValue);
             triggerHighlight();
         });
-        triggerHighlight();
+        
+        triggerHighlight(); // Trigger initial highlight after setting code
     
         // Auto-indent: insert previous line's indents on enter TODO: check if this works
         addEventHandler(KeyEvent.KEY_PRESSED, keyEvent -> {

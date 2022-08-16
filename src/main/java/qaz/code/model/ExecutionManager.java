@@ -1,5 +1,7 @@
 package qaz.code.model;
 
+import javafx.application.Platform;
+
 import java.util.ArrayList;
 import java.util.List;
 

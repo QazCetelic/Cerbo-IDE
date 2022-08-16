@@ -7,6 +7,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.stage.Stage;
+import qaz.code.model.Sheet;
 import qaz.code.model.Sheets;
 import qaz.code.view.MainPane;
 import qaz.code.view.SheetTab;
@@ -40,7 +41,7 @@ public class Cerbo extends Application {
         scene.getAccelerators().put(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN), () -> {
             mainPane.getSheetsPane().addEmptySheet();
         });
-        mainPane.getSheetsPane().getSelectionModel().selectedItemProperty().addListener(observable -> changeTitle());
+        sheets.selectedSheetProperty().addListener(observable -> changeTitle());
         Image icon = new Image(Objects.requireNonNull(Cerbo.class.getResourceAsStream("/icon.png"), "Failed to load icon"));
         stage.getIcons().add(icon);
         stage.setScene(scene);
@@ -49,7 +50,7 @@ public class Cerbo extends Application {
     }
 
     public void changeTitle() {
-        SheetTab tab = mainPane.getSheetsPane().getSelectedSheetTab();
-        mainStage.setTitle("Cerbo IDE - " + (tab != null ? tab.getText() : "None"));
+        Sheet sheet = sheets.selectedSheetProperty().get();
+        mainStage.setTitle("Cerbo IDE - " + (sheet != null ? sheet.nameProperty().get() : "None"));
     }
 }

@@ -13,6 +13,7 @@ public class SheetPane extends BorderPane {
     private final MemoryPane memoryPane;
     private final TextField inputField;
     private final OutputPane outputPane;
+    private final OperationsView operationsView;
     
     public SheetPane(Sheet sheet) {
         this.sheet = sheet;
@@ -20,16 +21,24 @@ public class SheetPane extends BorderPane {
         memoryPane = new MemoryPane();
         inputField = new TextField();
         outputPane = new OutputPane();
+        operationsView = new OperationsView(sheet);
         
         setCenter(codePane);
-        setLeft(memoryPane);
+        
+        BorderPane left = new BorderPane();
+        DoubleBinding leftWidth = widthProperty().multiply(0.25);
+        left.maxWidthProperty().bind(leftWidth);
+        left.prefWidthProperty().bind(leftWidth);
+        left.setCenter(memoryPane);
+        operationsView.maxHeightProperty().bind(maxHeightProperty().multiply(0.45));
+        operationsView.prefWidthProperty().bind(leftWidth);
+        memoryPane.prefWidthProperty().bind(leftWidth);
+        left.setBottom(operationsView);
+        setLeft(left);
         setBottom(inputField);
         setTop(outputPane);
         
         outputPane.maxWidthProperty().bind(maxWidthProperty());
-        DoubleBinding memoryPaneWidth = widthProperty().multiply(0.25);
-        memoryPane.maxWidthProperty().bind(memoryPaneWidth);
-        memoryPane.prefWidthProperty().bind(memoryPaneWidth);
         
         inputField.setPromptText("Input");
         sheet.inputProperty().bind(inputField.textProperty());

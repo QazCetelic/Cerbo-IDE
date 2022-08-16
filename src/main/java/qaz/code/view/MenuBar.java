@@ -46,7 +46,9 @@ public class MenuBar extends javafx.scene.control.MenuBar {
         Menu edit = new Menu("Edit");
         MenuItem minify = new MenuItem("Minify");
         minify.setOnAction(e -> sheets.selectedSheetProperty().get().minify(50));
-        edit.getItems().addAll(minify);
+        MenuItem reduceSpacing = new MenuItem("Reduce Spacing");
+        reduceSpacing.setOnAction(e -> sheets.selectedSheetProperty().get().reduceSpacing());
+        edit.getItems().addAll(minify, reduceSpacing);
         Menu view = new Menu("View");
         RadioMenuItem memoryView = new RadioMenuItem("Memory view");
         showMemoryView = memoryView.selectedProperty();

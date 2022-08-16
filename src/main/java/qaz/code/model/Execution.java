@@ -108,9 +108,9 @@ public class Execution {
             for (int i = 0; i < s.length(); i++) {
                 // > moves the pointer to the right
                 if (s.charAt(i) == '>') {
+                    operationsMoveRight++;
                     if (pointer == (size - 1)) {
                         pointer = 0;
-                        operationsMoveRight++;
                         checkOperations();
                     }
                     else {
@@ -119,10 +119,10 @@ public class Execution {
                 }
                 // < moves the pointer to the left
                 else if (s.charAt(i) == '<') {
+                    operationsMoveLeft++;
                     if (pointer == 0) {
                         // Wraps to right
                         pointer = size - 1;
-                        operationsMoveLeft++;
                         checkOperations();
                     }
                     else {
@@ -131,14 +131,17 @@ public class Execution {
                 }
                 // + increments the value of the memory cell under the pointer
                 else if (s.charAt(i) == '+') {
+                    operationsIncrease++;
                     memory[pointer]++;
                 }
                 // - decrements the value of the memory cell under the pointer
                 else if (s.charAt(i) == '-') {
+                    operationsDecrease++;
                     memory[pointer]--;
                 }
                 // . outputs the character signified by the cell at the pointer
                 else if (s.charAt(i) == '.') {
+                    operationsOutput++;
                     char character = (char) (memory[pointer]);
                     lineOutput.add(character);
                 }
@@ -148,6 +151,7 @@ public class Execution {
                 }
                 // , inputs a character and store it in the cell at the pointer
                 else if (s.charAt(i) == ',') {
+                    operationsInput++;
                     if (input.size() > 0) {
                         memory[pointer] = (byte) (input.remove(0).charValue());
                     }
