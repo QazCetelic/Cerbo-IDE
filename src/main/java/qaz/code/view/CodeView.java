@@ -6,6 +6,8 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
+import org.reactfx.value.Val;
+import org.reactfx.value.Var;
 import qaz.code.model.Sheet;
 
 import java.util.regex.Matcher;
@@ -24,13 +26,11 @@ public class CodeView extends CodeArea {
         setLineHighlighterOn(true);
         // Syntax highlighting for visible lines of code
         getVisibleParagraphs().addModificationObserver(new VisibleParagraphStyler<>(this, Highlighter::computeHighlighting));
-        // Sync code with model
-        sheet.codeProperty().bind(textProperty());
-        sheet.codeProperty().addListener((observable, oldValue, newValue) -> {
-            // Only set when it's not the same already to prevent infinite loops
-            if (!newValue.equals(getText())) replaceText(newValue);
-            triggerHighlight();
-        });
+        
+        // Sync code with model TODO: this is kind of a hack but also the cleanest way to do it
+        Val<String> textProperty = (Val<String>) textProperty();
+        textProperty.asVar(this::replaceText).bindBidirectional(sheet.codeProperty());
+        sheet.codeProperty().addListener((observable, oldValue, newValue) -> triggerHighlight());
         
         triggerHighlight(); // Trigger initial highlight after setting code
     
