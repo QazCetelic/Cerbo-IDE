@@ -13,6 +13,8 @@ import qaz.code.model.Execution;
 import qaz.code.model.Result;
 import qaz.code.model.Sheet;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class OperationsView extends BorderPane {
@@ -31,18 +33,19 @@ public class OperationsView extends BorderPane {
             }
             else {
                 Execution execution = result.execution;
+                ObservableList<PieChart.Data> list = FXCollections.observableArrayList(new ArrayList<>());
+                list.add(new PieChart.Data("<", execution.getOperationsMoveLeft()));
+                list.add(new PieChart.Data(">", execution.getOperationsMoveRight()));
+                list.add(new PieChart.Data("+", execution.getOperationsIncrease()));
+                list.add(new PieChart.Data("-", execution.getOperationsDecrease()));
+                list.add(new PieChart.Data("[", execution.getOperationsLeftLoop()));
+                list.add(new PieChart.Data("]", execution.getOperationsRightLoop()));
+                list.add(new PieChart.Data(".", execution.getOperationsInput()));
+                list.add(new PieChart.Data(",", execution.getOperationsOutput()));
+                list.removeIf(data -> data.getPieValue() == 0);
                 Platform.runLater(() -> {
                     setCenter(operationsDistributionChart);
-                    operationsDistributionChart.dataProperty().set(FXCollections.observableList(List.of(
-                            new PieChart.Data("<", execution.getOperationsMoveLeft()),
-                            new PieChart.Data(">", execution.getOperationsMoveRight()),
-                            new PieChart.Data("+", execution.getOperationsIncrease()),
-                            new PieChart.Data("-", execution.getOperationsDecrease()),
-                            new PieChart.Data("[", execution.getOperationsLeftLoop()),
-                            new PieChart.Data("]", execution.getOperationsRightLoop()),
-                            new PieChart.Data(".", execution.getOperationsInput()),
-                            new PieChart.Data(",", execution.getOperationsOutput())
-                    )));
+                    operationsDistributionChart.dataProperty().set(list);
                 });
             }
         });
