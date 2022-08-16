@@ -4,6 +4,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
+import qaz.code.Cerbo;
 import qaz.code.model.Sheet;
 import qaz.code.model.Sheets;
 
@@ -30,23 +31,23 @@ public class MenuBar extends javafx.scene.control.MenuBar {
         return showGeneralOutputView;
     }
     
-    public MenuBar(Sheets sheets) {
+    public MenuBar(Cerbo cerbo) {
         Menu file = new Menu("File");
         MenuItem save = new MenuItem("Save");
-        save.setOnAction(e -> sheets.selectedSheetProperty().get().save());
+        save.setOnAction(e -> cerbo.sheets.selectedSheetProperty().get().save());
         MenuItem load = new MenuItem("Load");
         load.setOnAction(e -> {
             Sheet loadedSheet = Sheet.load();
             if (loadedSheet != null) {
-                sheets.select(loadedSheet);
+                cerbo.sheets.select(loadedSheet);
             }
         });
         file.getItems().addAll(save, load);
         Menu edit = new Menu("Edit");
         MenuItem minify = new MenuItem("Minify");
-        minify.setOnAction(e -> sheets.selectedSheetProperty().get().minify(50));
+        minify.setOnAction(e -> cerbo.sheets.selectedSheetProperty().get().minify(50));
         MenuItem reduceSpacing = new MenuItem("Reduce Spacing");
-        reduceSpacing.setOnAction(e -> sheets.selectedSheetProperty().get().reduceSpacing());
+        reduceSpacing.setOnAction(e -> cerbo.sheets.selectedSheetProperty().get().reduceSpacing());
         edit.getItems().addAll(minify, reduceSpacing);
         Menu view = new Menu("View");
         RadioMenuItem memoryView = new RadioMenuItem("Memory view");
@@ -57,7 +58,8 @@ public class MenuBar extends javafx.scene.control.MenuBar {
         showLineOutputView = lineOutputView.selectedProperty();
         RadioMenuItem generalOutputView = new RadioMenuItem("General output view");
         showGeneralOutputView = generalOutputView.selectedProperty();
-        view.getItems().addAll(memoryView, outputView, lineOutputView, generalOutputView);
+        RadioMenuItem operationVisualizer = new RadioMenuItem("Operation visualizer");
+        view.getItems().addAll(memoryView, outputView, lineOutputView, generalOutputView, operationVisualizer);
         view.getItems().forEach(menuItem -> ((RadioMenuItem) menuItem).setSelected(true));
         Menu execution = new Menu("Execution");
         RadioMenuItem execute = new RadioMenuItem("Execute");

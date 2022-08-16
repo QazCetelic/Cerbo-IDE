@@ -29,9 +29,8 @@ public class Cerbo extends Application {
 
     @Override
     public void start(Stage stage) {
-        mainPane = new MainPane(sheets);
+        mainPane = new MainPane(this);
         mainStage = stage;
-        stage.setTitle("Cerbo IDE");
         Scene scene = new Scene(mainPane, 800, 500);
 //        DarculaFX.applyDarculaStyle(scene);
         scene.getStylesheets().add(getClass().getResource("/darcula.css").toExternalForm());

@@ -1,6 +1,7 @@
 package qaz.code.view;
 
 import javafx.scene.layout.BorderPane;
+import qaz.code.Cerbo;
 import qaz.code.model.Sheets;
 
 public class MainPane extends BorderPane {
@@ -11,9 +12,9 @@ public class MainPane extends BorderPane {
         return sheetsPane;
     }
 
-    public MainPane(Sheets sheets) {
-        menuBar = new MenuBar(sheets);
-        sheetsPane = new SheetsPane(sheets);
+    public MainPane(Cerbo cerbo) {
+        menuBar = new MenuBar(cerbo);
+        sheetsPane = new SheetsPane(cerbo.sheets);
         setCenter(sheetsPane);
         setTop(menuBar);
         sheetsPane.addEmptySheet();
