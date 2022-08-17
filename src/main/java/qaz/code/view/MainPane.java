@@ -14,7 +14,7 @@ public class MainPane extends BorderPane {
 
     public MainPane(Cerbo cerbo) {
         menuBar = new MenuBar(cerbo);
-        sheetsPane = new SheetsPane(cerbo.sheets);
+        sheetsPane = new SheetsPane(cerbo);
         setCenter(sheetsPane);
         setTop(menuBar);
         sheetsPane.addEmptySheet();

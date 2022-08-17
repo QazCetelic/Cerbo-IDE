@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import javafx.beans.binding.DoubleBinding;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
+import qaz.code.Cerbo;
 import qaz.code.model.Result;
 import qaz.code.model.Sheet;
 
@@ -15,13 +16,16 @@ public class SheetPane extends BorderPane {
     private final OutputPane outputPane;
     private final OperationsView operationsView;
     
-    public SheetPane(Sheet sheet) {
+    public SheetPane(Sheet sheet, Cerbo cerbo) {
         this.sheet = sheet;
         codePane = new CodePane(sheet);
         memoryPane = new MemoryPane();
+        memoryPane.visibleProperty().bind(cerbo.views.showMemoryPane);
         inputField = new TextField();
         outputPane = new OutputPane();
+        outputPane.visibleProperty().bind(cerbo.views.showOutputView);
         operationsView = new OperationsView(sheet);
+        operationsView.visibleProperty().bind(cerbo.views.showOperationsView);
         
         setCenter(codePane);
         
@@ -41,7 +45,7 @@ public class SheetPane extends BorderPane {
         outputPane.maxWidthProperty().bind(maxWidthProperty());
         
         inputField.setPromptText("Input");
-        sheet.inputProperty().bind(inputField.textProperty());
+        sheet.inputProperty().bindBidirectional(inputField.textProperty());
         
         sheet.lastResultProperty().addListener((observable, oldValue, newValue) -> Platform.runLater(() -> showResult(newValue)));
     }

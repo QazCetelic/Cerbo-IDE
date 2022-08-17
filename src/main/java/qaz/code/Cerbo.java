@@ -9,6 +9,7 @@ import javafx.scene.input.KeyCombination;
 import javafx.stage.Stage;
 import qaz.code.model.Sheet;
 import qaz.code.model.Sheets;
+import qaz.code.model.Views;
 import qaz.code.view.MainPane;
 
 import java.util.Objects;
@@ -22,6 +23,7 @@ public class Cerbo extends Application {
     }
     
     public final Sheets sheets = new Sheets();
+    public final Views views = new Views();
     
     public static void main(String[] args) {
         launch(args);

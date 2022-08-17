@@ -53,7 +53,7 @@ public class Sheet extends BorderPane {
      * @param maxLineLength The maximum length of a line in the code, use null to disable.
      * @return Whether something has changed.
      */
-    public boolean minify(Integer maxLineLength) {
+    public boolean minify(@Nullable Integer maxLineLength) {
         char[] code = codeProperty.get().toCharArray();
         int startingHash = Arrays.hashCode(code);
         int newLineCounter = 0;
