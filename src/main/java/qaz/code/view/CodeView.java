@@ -30,9 +30,9 @@ public class CodeView extends CodeArea {
         // Sync code with model TODO: this is kind of a hack but also the cleanest way to do it
         ((Val<String>) textProperty()).asVar(this::replaceText).bindBidirectional(sheet.codeProperty());
         
-        sheet.codeProperty().addListener((observable, oldValue, newValue) -> {
-            triggerHighlight();
-        });
+        sheet.codeProperty().addListener((observable, oldValue, newValue) -> triggerHighlight());
+        // Empty listener required for it to properly detect changes for some reason
+        textProperty().addListener((observable, oldValue, newValue) -> {});
         
         triggerHighlight(); // Trigger initial highlight after setting code
     
