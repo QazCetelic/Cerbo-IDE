@@ -188,14 +188,18 @@ public class Execution {
                         checkOperations();
                         i--;
                         while (c > 0 || s.charAt(i) != '[') {
-                            operationsLeftLoop++;
-                            checkOperations();
                             if (s.charAt(i) == ']') {
+                                operationsRightLoop++;
                                 c++;
                             }
                             else if (s.charAt(i) == '[') {
+                                operationsLeftLoop++;
                                 c--;
                             }
+                            else {
+                                operationsLeftLoop++; // TODO remove
+                            }
+                            checkOperations();
                             i--;
                         }
                         i--;

@@ -28,9 +28,15 @@ public class CodeView extends CodeArea {
         getVisibleParagraphs().addModificationObserver(new VisibleParagraphStyler<>(this, Highlighter::computeHighlighting));
         
         // Sync code with model TODO: this is kind of a hack but also the cleanest way to do it
-        Val<String> textProperty = (Val<String>) textProperty();
-        textProperty.asVar(this::replaceText).bindBidirectional(sheet.codeProperty());
-        sheet.codeProperty().addListener((observable, oldValue, newValue) -> triggerHighlight());
+        ((Val<String>) textProperty()).asVar(this::replaceText).bindBidirectional(sheet.codeProperty());
+        
+        sheet.codeProperty().addListener((observable, oldValue, newValue) -> {
+            triggerHighlight();
+            System.out.println("codeProperty():\n" + newValue);
+        });
+        textProperty().addListener((observable, oldValue, newValue) -> {
+            System.out.println("textProperty():\n" + newValue);
+        });
         
         triggerHighlight(); // Trigger initial highlight after setting code
     

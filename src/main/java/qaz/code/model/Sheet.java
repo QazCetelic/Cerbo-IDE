@@ -31,6 +31,8 @@ public class Sheet extends BorderPane {
     public Sheet(String name) {
         this.nameProperty.set(name);
         codeProperty.addListener((observable, oldValue, newValue) -> ExecutionManager.INSTANCE.process(this));
+        // Initially process the sheet
+        ExecutionManager.INSTANCE.process(this);
     }
     
     public StringProperty codeProperty() {

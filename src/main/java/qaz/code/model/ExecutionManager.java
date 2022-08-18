@@ -19,10 +19,12 @@ public class ExecutionManager {
                 .replaceAll("^\s+", "")
                 // Trim end
                 .replaceAll("\s+$", "");
+        
+        
         final List<Character> input = new ArrayList<>() {{
             for (char c : sheet.inputProperty().get().toCharArray()) add(c);
         }};
-        
+    
         if (cleanedCode.hashCode() != lastExecutionCodeHash || input.hashCode() != lastExecutionInputHash) {
             lastExecutionCodeHash = cleanedCode.hashCode();
             lastExecutionInputHash = input.hashCode();

@@ -9,7 +9,6 @@ import qaz.code.model.Result;
 import qaz.code.model.Sheet;
 
 public class SheetPane extends BorderPane {
-    private final Sheet sheet;
     private final CodePane codePane;
     private final MemoryPane memoryPane;
     private final TextField inputField;
@@ -17,7 +16,6 @@ public class SheetPane extends BorderPane {
     private final OperationsView operationsView;
     
     public SheetPane(Sheet sheet, Cerbo cerbo) {
-        this.sheet = sheet;
         codePane = new CodePane(sheet);
         memoryPane = new MemoryPane();
         memoryPane.visibleProperty().bind(cerbo.views.showMemoryPane);
@@ -47,20 +45,23 @@ public class SheetPane extends BorderPane {
         inputField.setPromptText("Input");
         sheet.inputProperty().bindBidirectional(inputField.textProperty());
         
-        sheet.lastResultProperty().addListener((observable, oldValue, newValue) -> Platform.runLater(() -> showResult(newValue)));
+        sheet.lastResultProperty().addListener((observable, oldValue, newValue) -> showResult(newValue));
+        showResult(sheet.lastResultProperty().get());
     }
     
     private void showResult(Result result) {
-        if (result instanceof Result.Succes) {
-            outputPane.setOutput(result.toString());
-            codePane.showResults(((Result.Succes) result).output);
-            // Only update memory view if execution succeeded
-            memoryPane.displayMemory(result.execution);
-        }
-        if (result instanceof Result.Failure) {
-            outputPane.setError(((Result.Failure) result).error);
-            // Display failure in memory pane
-            memoryPane.invalidate();
-        }
+        Platform.runLater(() -> {
+            if (result instanceof Result.Succes) {
+                outputPane.setOutput(result.toString());
+                codePane.showResults(((Result.Succes) result).output);
+                // Only update memory view if execution succeeded
+                memoryPane.displayMemory(result.execution);
+            }
+            if (result instanceof Result.Failure) {
+                outputPane.setError(((Result.Failure) result).error);
+                // Display failure in memory pane
+                memoryPane.invalidate();
+            }
+        });
     }
 }

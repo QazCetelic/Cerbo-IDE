@@ -3,6 +3,7 @@ package qaz.code.view;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
@@ -24,7 +25,7 @@ public class OperationsView extends BorderPane {
         sheet.lastResultProperty().addListener((observable, oldValue, newValue) -> {
             Result result = sheet.lastResultProperty().get();
             if (result == null) {
-                Platform.runLater(() -> setCenter(new Label("No results")));
+                Platform.runLater(() -> setTop(new Label("No results")));
             }
             else {
                 Execution execution = result.execution;
@@ -39,6 +40,9 @@ public class OperationsView extends BorderPane {
                 list.add(new PieChart.Data(",", execution.getOperationsOutput()));
                 list.removeIf(data -> data.getPieValue() == 0);
                 Platform.runLater(() -> {
+                    Label operationsLabel = new Label(execution.getOperations() + " operations");
+                    operationsLabel.setPadding(new Insets(0, 0, 0, 5));
+                    setTop(operationsLabel);
                     setCenter(operationsDistributionChart);
                     operationsDistributionChart.dataProperty().set(list);
                 });
