@@ -32,10 +32,6 @@ public class CodeView extends CodeArea {
         
         sheet.codeProperty().addListener((observable, oldValue, newValue) -> {
             triggerHighlight();
-            System.out.println("codeProperty():\n" + newValue);
-        });
-        textProperty().addListener((observable, oldValue, newValue) -> {
-            System.out.println("textProperty():\n" + newValue);
         });
         
         triggerHighlight(); // Trigger initial highlight after setting code
