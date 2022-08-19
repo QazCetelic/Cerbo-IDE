@@ -19,7 +19,7 @@ public class CodePane extends BorderPane {
     public ScrollPane resultsPane;
     private final Sheet sheet;
     
-    public CodePane(Sheet sheet) {
+    public CodePane(Sheet sheet, Cerbo cerbo) {
         this.sheet = sheet;
         codeView = new CodeView(sheet);
         resultsPane = new ScrollPane();
@@ -63,7 +63,10 @@ public class CodePane extends BorderPane {
         HBox infoBox = new HBox(25, lineNumberLabel, selectionLabel);
         setBottom(infoBox);
     
-        DoubleBinding resultWidthRestriction = widthProperty().multiply(0.20);
+        resultsPane.visibleProperty().bind(cerbo.views.showLineOutput);
+        DoubleBinding resultWidthRestriction = Bindings.createDoubleBinding(() -> {
+            return cerbo.views.showLineOutput.getValue() ? getWidth() * 0.20 : 0;
+        }, widthProperty(), cerbo.views.showLineOutput);
         resultsPane.maxWidthProperty().bind(resultWidthRestriction);
         resultsPane.prefWidthProperty().bind(resultWidthRestriction);
         showResults(new ArrayList<>()); // Trigger initial layout

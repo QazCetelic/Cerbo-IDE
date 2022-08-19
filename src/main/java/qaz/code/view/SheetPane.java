@@ -16,7 +16,7 @@ public class SheetPane extends BorderPane {
     private final OperationsView operationsView;
     
     public SheetPane(Sheet sheet, Cerbo cerbo) {
-        codePane = new CodePane(sheet);
+        codePane = new CodePane(sheet, cerbo);
         memoryPane = new MemoryPane();
         memoryPane.visibleProperty().bind(cerbo.views.showMemoryPane);
         inputField = new TextField();
