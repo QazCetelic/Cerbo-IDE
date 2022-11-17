@@ -59,11 +59,17 @@ public class Execution {
     }
     
     private final byte[] memory;
-
+    
+    /**
+     * @return A clone of the memory array
+     */
     public byte[] getMemory() {
         return memory.clone();
     }
-
+    
+    /**
+     * @return The last index of the memory array that is not 0
+     */
     public int getLastFilledIndex() {
         int lastIndex = memory.length - 1;
         while (lastIndex > 0 && memory[lastIndex] == 0) {
@@ -71,7 +77,10 @@ public class Execution {
         }
         return lastIndex;
     }
-
+    
+    /**
+     * @return The amount of bytes in memory that aren't 0
+     */
     public int getAmountNotEmpty() {
         int counter = 0;
         for (byte b : memory) {
