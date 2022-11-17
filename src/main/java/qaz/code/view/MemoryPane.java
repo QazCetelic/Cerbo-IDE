@@ -40,8 +40,8 @@ public class MemoryPane extends BorderPane {
         
         byte[] memory = execution.getMemory();
         int lastIndex = execution.getLastFilledIndex();
-        // Look for the last index of the memory array that is not 0
-        for (int i = 0; i <= lastIndex; i++) {
+        // This caps the amount of memory displayed to 2500 to prevent lag, TODO find more efficient way
+        for (int i = 0; i <= Math.min(lastIndex, 2_500); i++) {
             ByteView byteDisplay = new ByteView(memory[i], false, i);
             byteDisplay.getStyleClass().add("memory-grid");
             flowPane.getChildren().add(byteDisplay);
