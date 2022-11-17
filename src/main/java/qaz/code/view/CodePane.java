@@ -3,11 +3,13 @@ package qaz.code.view;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.binding.StringBinding;
+import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import qaz.code.Cerbo;
 import qaz.code.model.Analyzer;
 import qaz.code.model.Sheet;
 
@@ -74,14 +76,30 @@ public class CodePane extends BorderPane {
     
     // TODO use byte[] as parameter
     public void showResults(List<List<Character>> results) {
+        // TODO the size of the output lines is still not quite right
+        DoubleBinding paragraphHeightBinding = Bindings.createDoubleBinding(
+            () -> codeView.getTotalHeightEstimate() / codeView.getParagraphs().size(), codeView.totalHeightEstimateProperty()
+        );
+        // Adjust because of weird scaling bug
+        DoubleBinding adjustedHeightBinding = paragraphHeightBinding.multiply(17.0 / 17.6);
+//        double paragraphHeight = codeView.getTotalHeightEstimate() / codeView.getParagraphs().size();
+        
         VBox rows = new VBox(0);
         int index = -1;
         for (List<Character> result : results) {
             // Add output for line...
             if (!result.isEmpty()) {
-                HBox row = new HBox(3);
+                HBox row = new HBox(0);
                 for (Character c : result) {
-                    row.getChildren().add(new ByteView((byte) (char) c, true, index++));
+                    ByteView byteView = new ByteView((byte) (char) c, true, index++);
+                    byteView.getStyleClass().add("line-output");
+                    byteView.minHeightProperty().bind(adjustedHeightBinding);
+                    byteView.maxHeightProperty().bind(adjustedHeightBinding);
+                    byteView.setPadding(Insets.EMPTY);
+                    row.getChildren().add(byteView);
+                    byteView.heightProperty().addListener(observable -> {
+                        System.out.println("byteView height: " + byteView.getHeight() + " byteView maxHeight: " + byteView.getMaxHeight() + " byteView paragraphHeight: " + paragraphHeightBinding.get());
+                    });
                 }
                 rows.getChildren().add(row);
             }
