@@ -9,8 +9,8 @@
     -fx-highlight-fill: #646568;
 }
 
-.code-area > * {
-
+.code-area {
+    -fx-font-size: 12;
 }
 
 .code-area:editable:focused {
@@ -24,7 +24,7 @@
     -fx-background-color: transparent;
     -fx-border-width: 0 3 0 0;
     /* Prevent border from overlapping */
-    -fx-border-insets: 0.5, 0, 0.5, 0;
+    -fx-border-insets: 0.5, 0, 0, 0;
     -fx-border-color: hsba(0, 0%, 100%, 0.1);
     -fx-background-size: auto 100%;
     -fx-background-insets: 0, 0, 99999999, 0;
@@ -135,6 +135,9 @@
     -fx-opacity: 0.5;
 }
 
+.chart-pie {
+    -fx-border-color: #646464;
+}
 /* Move left */
 .data0.chart-pie { -fx-pie-color: -field-arithmatic-color; }
 /* Move right */
