@@ -9,13 +9,14 @@ import javafx.scene.control.Dialog
 import javafx.scene.layout.BorderPane
 import javafx.stage.FileChooser
 import qaz.code.Cerbo
+import qaz.code.model.Operations.Companion.OPERATORS
 import java.io.File
 import java.io.FileWriter
 import java.io.IOException
 import java.util.*
 
-class Sheet(name: String) : BorderPane() {
-    // TODO don't have these classes for individual sheets but for the whole application
+// TODO Split model and view
+class Sheet : BorderPane {
     val lastResultProperty: ObjectProperty<Result> = SimpleObjectProperty()
 
     /**
@@ -26,12 +27,10 @@ class Sheet(name: String) : BorderPane() {
     val inputProperty: StringProperty = SimpleStringProperty("")
     val nameProperty: StringProperty = SimpleStringProperty(null)
 
-    init {
+    constructor(name: String): super() {
         nameProperty.set(name)
-        codeProperty.addListener { observable: ObservableValue<out String?>?, oldValue: String?, newValue: String? ->
-            ExecutionManager.INSTANCE.process(
-                this
-            )
+        codeProperty.addListener { _, _, _ ->
+            ExecutionManager.INSTANCE.process(this)
         }
         // Initially process the sheet
         ExecutionManager.INSTANCE.process(this)
@@ -43,11 +42,11 @@ class Sheet(name: String) : BorderPane() {
      */
     fun minify(maxLineLength: Int?): Boolean {
         val code = codeProperty.get().toCharArray()
-        val startingHash = Arrays.hashCode(code)
+        val startingHash = code.contentHashCode()
         var newLineCounter = 0
         val sb = StringBuilder()
         for (c in code) {
-            if (Analyzer.OPERATORS.contains(c)) {
+            if (OPERATORS.contains(c)) {
                 sb.append(c)
                 // Don't do anything with line length if it's disabled
                 if (maxLineLength != null) {
@@ -61,7 +60,7 @@ class Sheet(name: String) : BorderPane() {
         }
         val newCode = sb.toString()
         println("New code:\n$newCode")
-        val changed = Arrays.hashCode(newCode.toCharArray()) != startingHash
+        val changed = newCode.toCharArray().contentHashCode() != startingHash
         codeProperty.set(newCode)
         return changed
     }
@@ -73,7 +72,7 @@ class Sheet(name: String) : BorderPane() {
     fun reduceSpacing(): Boolean {
         val newCode = codeProperty.get()
             .replace("\\n{2}".toRegex(), "\n")
-            .replace("\\s+$".toRegex(), "")
+            .trim()
         val changed = newCode != codeProperty.get()
         codeProperty.set(newCode)
         return changed
@@ -96,7 +95,8 @@ class Sheet(name: String) : BorderPane() {
             val writer = FileWriter(chosenFile)
             writer.write(codeProperty.get())
             writer.close() // TODO close when exception occurs
-        } catch (e: IOException) {
+        }
+        catch (e: IOException) {
             val dialog = Dialog<String>()
             dialog.title = "Failed to save file"
             dialog.contentText = e.localizedMessage
@@ -125,7 +125,8 @@ class Sheet(name: String) : BorderPane() {
                 val sheet = Sheet(chosenFile.name)
                 sheet.codeProperty.set(sb.toString())
                 sheet
-            } catch (e: IOException) {
+            }
+            catch (e: IOException) {
                 val dialog = Dialog<String>()
                 dialog.title = "Failed to load file"
                 dialog.contentText = e.localizedMessage

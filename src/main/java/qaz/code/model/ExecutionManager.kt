@@ -21,7 +21,7 @@ class ExecutionManager {
             .replace(FILTER_COMMENTS, "")
             .trim()
 
-        val input = sheet.inputProperty.get().toList();
+        val input = sheet.inputProperty.get().toMutableList();
 
         // Only executes if the code or input has changed to prevent unnecessary executions
         if (cleanedCode.hashCode() != lastExecutionCodeHash || input.hashCode() != lastExecutionInputHash) {

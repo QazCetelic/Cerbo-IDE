@@ -7,9 +7,9 @@ object Analyzer {
     fun isBalanced(str: String): Boolean {
         var count = 0
         for (i in str.indices) {
-            if (str[i] == '[') {
+            if (str[i] == Operations.LOOP_START.char) {
                 count++
-            } else if (str[i] == ']') {
+            } else if (str[i] == Operations.LOOP_END.char) {
                 count--
             }
             if (count < 0) {
@@ -19,8 +19,7 @@ object Analyzer {
         return count == 0
     }
 
-    @JvmField
-    val OPERATORS = setOf('+', '-', '<', '>', '[', ']', '.', ',')
+
     private val EMPTY_LOOP_PATTERN = Pattern.compile("\\[[^]\\[.,><+-]*]")
 
     /**
@@ -29,7 +28,7 @@ object Analyzer {
      * @return All the starting indexes of the empty loops.
      */
     @JvmStatic
-    fun findEmptyLoops(code: String?): List<Int> {
+    fun findEmptyLoops(code: String): List<Int> {
         val matcher = EMPTY_LOOP_PATTERN.matcher(code)
         val indexes: MutableList<Int> = ArrayList()
         while (matcher.find()) {

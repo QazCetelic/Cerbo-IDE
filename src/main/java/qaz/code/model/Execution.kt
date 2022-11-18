@@ -1,5 +1,7 @@
 package qaz.code.model
 
+import javafx.beans.property.BooleanProperty
+import javafx.beans.property.SimpleBooleanProperty
 import qaz.code.model.Analyzer.findEmptyLoops
 import qaz.code.model.Analyzer.isBalanced
 import qaz.code.model.Result.Succes
@@ -95,9 +97,9 @@ class Execution(profile: Profile) {
         }
     }
 
-    fun interpret(s: String, input: List<Char>): Result {
+    fun interpret(s: String, input: MutableList<Char>): Result {
         val start = System.currentTimeMillis()
-        return try {
+        try {
             if (!isBalanced(s)) throw ExecutionException("Brackets are not balanced")
             val emptyLoops = findEmptyLoops(s)
             if (emptyLoops.isNotEmpty()) {
@@ -112,7 +114,7 @@ class Execution(profile: Profile) {
                 // > moves the pointer to the right
                 if (s[i] == '>') {
                     operationsMoveRight++
-                    if (pointer == size - 1) {
+                    if (pointer == memory.lastIndex) {
                         pointer = 0
                     }
                     else {
@@ -123,7 +125,7 @@ class Execution(profile: Profile) {
                     operationsMoveLeft++
                     if (pointer == 0) {
                         // Wraps to right
-                        pointer = size - 1
+                        pointer = memory.lastIndex
                     }
                     else {
                         pointer--
@@ -148,9 +150,8 @@ class Execution(profile: Profile) {
                 }
                 else if (s[i] == ',') {
                     operationsInput++
-                    if (input.size > 0) {
-                        memory[pointer] = input.first().toChar().code.toByte()
-                        input.drop(1)
+                    if (input.isNotEmpty()) {
+                        memory[pointer] = input.removeAt(0).code.toByte()
                     }
                     else {
                         throw ExecutionException("No input available")
@@ -158,7 +159,7 @@ class Execution(profile: Profile) {
                 }
                 else if (s[i] == '[') {
                     operationsLeftLoop++
-                    if (memory[pointer].toInt() == 0) {
+                    if (memory[pointer] == 0.toByte()) {
                         operationsLeftLoop++
                         i++
                         while (c > 0 || s[i] != ']') {
@@ -174,7 +175,7 @@ class Execution(profile: Profile) {
                 }
                 else if (s[i] == ']') {
                     operationsRightLoop++
-                    if (memory[pointer].toInt() != 0) {
+                    if (memory[pointer] != 0.toByte()) {
                         operationsRightLoop++
                         i--
                         while (c > 0 || s[i] != '[') {
@@ -213,7 +214,7 @@ class Execution(profile: Profile) {
     // TODO create a profile using settings pane and use it for the execution
     class Profile(val size: Int, val maximumOperations: Int) {
         companion object {
-            val DEFAULT = Profile(30000, 512000)
+            val DEFAULT = Profile(30000, 512_000)
         }
     }
 

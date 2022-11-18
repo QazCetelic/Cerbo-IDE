@@ -11,6 +11,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import qaz.code.Cerbo;
 import qaz.code.model.Analyzer;
+import qaz.code.model.Operations;
 import qaz.code.model.Sheet;
 
 import java.util.ArrayList;
@@ -52,7 +53,7 @@ public class CodePane extends BorderPane {
                 if (c == '\n') {
                     newLines++;
                 }
-                else if (Analyzer.OPERATORS.contains(c)) {
+                else if (Operations.Companion.getOPERATORS().contains(c)) {
                     operators++;
                 }
             }
