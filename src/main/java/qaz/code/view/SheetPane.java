@@ -43,22 +43,22 @@ public class SheetPane extends BorderPane {
         outputPane.maxWidthProperty().bind(maxWidthProperty());
         
         inputField.setPromptText("Input");
-        sheet.inputProperty().bindBidirectional(inputField.textProperty());
+        sheet.getInputProperty().bindBidirectional(inputField.textProperty());
         
-        sheet.lastResultProperty().addListener((observable, oldValue, newValue) -> showResult(newValue));
-        showResult(sheet.lastResultProperty().get());
+        sheet.getLastResultProperty().addListener((observable, oldValue, newValue) -> showResult(newValue));
+        showResult(sheet.getLastResultProperty().get());
     }
     
     private void showResult(Result result) {
         Platform.runLater(() -> {
             if (result instanceof Result.Succes) {
                 outputPane.setOutput(result.toString());
-                codePane.showResults(((Result.Succes) result).output);
+                codePane.showResults(((Result.Succes) result).getOutput());
                 // Only update memory view if execution succeeded
-                memoryPane.displayMemory(result.execution);
+                memoryPane.displayMemory(result.getExecution());
             }
             if (result instanceof Result.Failure) {
-                outputPane.setError(((Result.Failure) result).error);
+                outputPane.setError(((Result.Failure) result).getError());
                 // Display failure in memory pane
                 memoryPane.invalidate();
             }

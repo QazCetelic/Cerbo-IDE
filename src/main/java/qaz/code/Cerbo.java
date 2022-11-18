@@ -43,7 +43,7 @@ public class Cerbo extends Application {
         scene.getAccelerators().put(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN), () -> {
             mainPane.getSheetsPane().addEmptySheet();
         });
-        sheets.selectedSheetProperty().addListener(observable -> changeTitle());
+        sheets.getSelectedSheetProperty().addListener(observable -> changeTitle());
         Image icon = new Image(Objects.requireNonNull(Cerbo.class.getResourceAsStream("/icon.png"), "Failed to load icon"));
         stage.getIcons().add(icon);
         stage.setScene(scene);
@@ -52,7 +52,7 @@ public class Cerbo extends Application {
     }
 
     public void changeTitle() {
-        Sheet sheet = sheets.selectedSheetProperty().get();
-        mainStage.setTitle("Cerbo IDE - " + (sheet != null ? sheet.nameProperty().get() : "None"));
+        Sheet sheet = sheets.getSelectedSheetProperty().get();
+        mainStage.setTitle("Cerbo IDE - " + (sheet != null ? sheet.getNameProperty().get() : "None"));
     }
 }

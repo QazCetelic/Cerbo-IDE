@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'application'
     id 'org.openjfx.javafxplugin' version '0.0.13'
+    id 'org.jetbrains.kotlin.jvm' version '1.7.21'
 }
 
 group 'qaz.code'
@@ -18,6 +19,7 @@ dependencies {
     implementation 'org.fxmisc.richtext:richtextfx:0.11.0'
 
     implementation 'com.github.mouse0w0:darculafx:9.0.0'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 }
 
 javafx {
@@ -31,4 +33,14 @@ application {
 
 test {
     useJUnitPlatform()
+}
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+}
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "17"
+    }
 }

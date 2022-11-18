@@ -16,10 +16,10 @@ public class SheetsPane extends TabPane {
         getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             Platform.runLater(() -> {
                 SheetTab tab = (SheetTab) newValue;
-                if (tab != null) sheets.select(tab.getSheet());
+                if (tab != null) sheets.getSelectedSheetProperty().set(tab.getSheet());
             });
         });
-        sheets.sheetsProperty().addListener((observable, oldValue, newValue) -> {
+        sheets.getSheetsProperty().addListener((observable, oldValue, newValue) -> {
             Platform.runLater(() -> {
                 getTabs().clear();
                 getTabs().addAll(newValue.stream().map(sheet -> new SheetTab(sheet, cerbo)).toList());
@@ -29,7 +29,7 @@ public class SheetsPane extends TabPane {
     
     public void addEmptySheet() {
         Sheet sheet = new Sheet(getUsableName());
-        sheets.sheetsProperty().add(sheet);
+        sheets.getSheetsProperty().add(sheet);
     }
 
     private String getUsableName() {

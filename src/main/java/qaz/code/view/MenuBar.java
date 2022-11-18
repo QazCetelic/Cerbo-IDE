@@ -1,12 +1,10 @@
 package qaz.code.view;
 
-import javafx.beans.property.BooleanProperty;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
 import qaz.code.Cerbo;
 import qaz.code.model.Sheet;
-import qaz.code.model.Sheets;
 
 // TODO split menu's into seperate classes
 public class MenuBar extends javafx.scene.control.MenuBar {
@@ -14,21 +12,21 @@ public class MenuBar extends javafx.scene.control.MenuBar {
     public MenuBar(Cerbo cerbo) {
         Menu file = new Menu("File");
         MenuItem save = new MenuItem("Save");
-        save.setOnAction(e -> cerbo.sheets.selectedSheetProperty().get().save());
+        save.setOnAction(e -> cerbo.sheets.getSelectedSheetProperty().get().save());
         MenuItem load = new MenuItem("Load");
         load.setOnAction(e -> {
             Sheet loadedSheet = Sheet.load();
             if (loadedSheet != null) {
-                cerbo.sheets.select(loadedSheet);
+                cerbo.sheets.getSelectedSheetProperty().set(loadedSheet);
             }
         });
         file.getItems().addAll(save, load);
         
         Menu edit = new Menu("Edit");
         MenuItem minify = new MenuItem("Minify");
-        minify.setOnAction(e -> cerbo.sheets.selectedSheetProperty().get().minify(50));
+        minify.setOnAction(e -> cerbo.sheets.getSelectedSheetProperty().get().minify(50));
         MenuItem reduceSpacing = new MenuItem("Reduce Spacing");
-        reduceSpacing.setOnAction(e -> cerbo.sheets.selectedSheetProperty().get().reduceSpacing());
+        reduceSpacing.setOnAction(e -> cerbo.sheets.getSelectedSheetProperty().get().reduceSpacing());
         edit.getItems().addAll(minify, reduceSpacing);
         
         Menu view = new Menu("View");

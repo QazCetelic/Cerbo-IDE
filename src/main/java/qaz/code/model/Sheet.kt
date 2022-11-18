@@ -1,150 +1,137 @@
-package qaz.code.model;
+package qaz.code.model
 
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-import javafx.scene.control.Dialog;
-import javafx.scene.layout.BorderPane;
-import javafx.stage.FileChooser;
-import org.jetbrains.annotations.Nullable;
-import qaz.code.Cerbo;
+import javafx.beans.property.ObjectProperty
+import javafx.beans.property.SimpleObjectProperty
+import javafx.beans.property.SimpleStringProperty
+import javafx.beans.property.StringProperty
+import javafx.beans.value.ObservableValue
+import javafx.scene.control.Dialog
+import javafx.scene.layout.BorderPane
+import javafx.stage.FileChooser
+import qaz.code.Cerbo
+import java.io.File
+import java.io.FileWriter
+import java.io.IOException
+import java.util.*
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Scanner;
-
-public class Sheet extends BorderPane {
+class Sheet(name: String) : BorderPane() {
     // TODO don't have these classes for individual sheets but for the whole application
-    private final ObjectProperty<Result> lastResultProperty = new SimpleObjectProperty<>();
-    
+    val lastResultProperty: ObjectProperty<Result> = SimpleObjectProperty()
+
     /**
      * Change this, and it will be executed by the execution manager.
      * The result will be saved in lastResultProperty.
      */
-    private final StringProperty codeProperty = new SimpleStringProperty("");
-    private final StringProperty inputProperty = new SimpleStringProperty("");
-    private final StringProperty nameProperty = new SimpleStringProperty(null);
-    
-    public Sheet(String name) {
-        this.nameProperty.set(name);
-        codeProperty.addListener((observable, oldValue, newValue) -> ExecutionManager.INSTANCE.process(this));
+    val codeProperty: StringProperty = SimpleStringProperty("")
+    val inputProperty: StringProperty = SimpleStringProperty("")
+    val nameProperty: StringProperty = SimpleStringProperty(null)
+
+    init {
+        nameProperty.set(name)
+        codeProperty.addListener { observable: ObservableValue<out String?>?, oldValue: String?, newValue: String? ->
+            ExecutionManager.INSTANCE.process(
+                this
+            )
+        }
         // Initially process the sheet
-        ExecutionManager.INSTANCE.process(this);
+        ExecutionManager.INSTANCE.process(this)
     }
-    
-    public StringProperty codeProperty() {
-        return codeProperty;
-    }
-    
-    public StringProperty nameProperty() {
-        return nameProperty;
-    }
-    
-    public StringProperty inputProperty() {
-        return inputProperty;
-    }
-    
-    public ObjectProperty<Result> lastResultProperty() {
-        return lastResultProperty;
-    }
-    
+
     /**
      * @param maxLineLength The maximum length of a line in the code, use null to disable.
      * @return Whether something has changed.
      */
-    public boolean minify(@Nullable Integer maxLineLength) {
-        char[] code = codeProperty.get().toCharArray();
-        int startingHash = Arrays.hashCode(code);
-        int newLineCounter = 0;
-        StringBuilder sb = new StringBuilder();
-        for (char c : code) {
+    fun minify(maxLineLength: Int?): Boolean {
+        val code = codeProperty.get().toCharArray()
+        val startingHash = Arrays.hashCode(code)
+        var newLineCounter = 0
+        val sb = StringBuilder()
+        for (c in code) {
             if (Analyzer.OPERATORS.contains(c)) {
-                sb.append(c);
+                sb.append(c)
                 // Don't do anything with line length if it's disabled
                 if (maxLineLength != null) {
-                    newLineCounter++;
+                    newLineCounter++
                     if (newLineCounter == 50) {
-                        sb.append('\n');
-                        newLineCounter = 0;
+                        sb.append('\n')
+                        newLineCounter = 0
                     }
                 }
             }
         }
-        String newCode = sb.toString();
-        System.out.println("New code:\n" + newCode);
-        boolean changed = Arrays.hashCode(newCode.toCharArray()) != startingHash;
-        codeProperty.set(newCode);
-        return changed;
+        val newCode = sb.toString()
+        println("New code:\n$newCode")
+        val changed = Arrays.hashCode(newCode.toCharArray()) != startingHash
+        codeProperty.set(newCode)
+        return changed
     }
-    
+
     /**
      * Remove empty lines and trailing whitespace.
      * @return Whether something has changed.
      */
-    public boolean reduceSpacing() {
-        String newCode = codeProperty.get()
-                                     .replaceAll("\\n{2}", "\n")
-                                     .replaceAll("\\s+$", "");
-        boolean changed = !newCode.equals(codeProperty.get());
-        codeProperty.set(newCode);
-        return changed;
+    fun reduceSpacing(): Boolean {
+        val newCode = codeProperty.get()
+            .replace("\\n{2}".toRegex(), "\n")
+            .replace("\\s+$".toRegex(), "")
+        val changed = newCode != codeProperty.get()
+        codeProperty.set(newCode)
+        return changed
     }
-    
+
     /**
      * Save sheet to file
      */
-    public void save() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Save");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Brainfuck Code", "*.bf"));
-        File chosenFile = fileChooser.showSaveDialog(Cerbo.getMainStage());
-        if (chosenFile == null) return; // Cancel if no file was chosen
+    fun save() {
+        val fileChooser = FileChooser()
+        fileChooser.title = "Save"
+        fileChooser.extensionFilters.add(FileChooser.ExtensionFilter("Brainfuck Code", "*.bf"))
+        var chosenFile = fileChooser.showSaveDialog(Cerbo.getMainStage()) ?: return
+        // Cancel if no file was chosen
         try {
             // Ensure file has .bf extension
-            if (!chosenFile.getName().endsWith(".bf")) {
-                chosenFile = new File(chosenFile.getParent(), chosenFile.getName() + ".bf");
+            if (!chosenFile.name.endsWith(".bf")) {
+                chosenFile = File(chosenFile.parent, chosenFile.name + ".bf")
             }
-            FileWriter writer = new FileWriter(chosenFile);
-            writer.write(codeProperty.get());
-            writer.close(); // TODO close when exception occurs
-        }
-        catch (IOException e) {
-            Dialog<String> dialog = new Dialog<>();
-            dialog.setTitle("Failed to save file");
-            dialog.setContentText(e.getLocalizedMessage());
-            dialog.show();
+            val writer = FileWriter(chosenFile)
+            writer.write(codeProperty.get())
+            writer.close() // TODO close when exception occurs
+        } catch (e: IOException) {
+            val dialog = Dialog<String>()
+            dialog.title = "Failed to save file"
+            dialog.contentText = e.localizedMessage
+            dialog.show()
         }
     }
-    
-    /**
-     * Load a sheet from file
-     */
-    public static @Nullable Sheet load() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Load");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Brainfuck Code", "*.bf"));
-        File chosenFile = fileChooser.showOpenDialog(Cerbo.getMainStage());
-        try {
-            StringBuilder sb = new StringBuilder();
-            Scanner reader = new Scanner(chosenFile);
-            while (reader.hasNextLine()) {
-                sb.append(reader.nextLine());
-                sb.append('\n');
+
+    companion object {
+        /**
+         * Load a sheet from file
+         */
+        @JvmStatic
+        fun load(): Sheet? {
+            val fileChooser = FileChooser()
+            fileChooser.title = "Load"
+            fileChooser.extensionFilters.add(FileChooser.ExtensionFilter("Brainfuck Code", "*.bf"))
+            val chosenFile = fileChooser.showOpenDialog(Cerbo.getMainStage())
+            return try {
+                val sb = StringBuilder()
+                val reader = Scanner(chosenFile)
+                while (reader.hasNextLine()) {
+                    sb.append(reader.nextLine())
+                    sb.append('\n')
+                }
+                reader.close() // TODO close when exception occurs
+                val sheet = Sheet(chosenFile.name)
+                sheet.codeProperty.set(sb.toString())
+                sheet
+            } catch (e: IOException) {
+                val dialog = Dialog<String>()
+                dialog.title = "Failed to load file"
+                dialog.contentText = e.localizedMessage
+                dialog.show()
+                null
             }
-            reader.close(); // TODO close when exception occurs
-            Sheet sheet = new Sheet(chosenFile.getName());
-            sheet.codeProperty.set(sb.toString());
-            return sheet;
-        }
-        catch (IOException e) {
-            Dialog<String> dialog = new Dialog<>();
-            dialog.setTitle("Failed to load file");
-            dialog.setContentText(e.getLocalizedMessage());
-            dialog.show();
-            return null;
         }
     }
 }

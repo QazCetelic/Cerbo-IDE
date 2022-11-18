@@ -1,7 +1,3 @@
-package qaz.code.model;
+package qaz.code.model
 
-public class ExecutionException extends Exception {
-    public ExecutionException(String message) {
-        super(message);
-    }
-}
+class ExecutionException(message: String) : Exception(message)

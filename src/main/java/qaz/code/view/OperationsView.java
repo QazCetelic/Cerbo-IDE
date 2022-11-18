@@ -22,13 +22,13 @@ public class OperationsView extends BorderPane {
         operationsDistributionChart.setStartAngle(90);
         operationsDistributionChart.setLegendVisible(false);
     
-        sheet.lastResultProperty().addListener((observable, oldValue, newValue) -> {
-            Result result = sheet.lastResultProperty().get();
+        sheet.getLastResultProperty().addListener((observable, oldValue, newValue) -> {
+            Result result = sheet.getLastResultProperty().get();
             if (result == null) {
                 Platform.runLater(() -> setTop(new Label("No results")));
             }
             else {
-                Execution execution = result.execution;
+                Execution execution = result.getExecution();
                 ObservableList<PieChart.Data> list = FXCollections.observableArrayList(new ArrayList<>());
                 list.add(new PieChart.Data("<", execution.getOperationsMoveLeft()));
                 list.add(new PieChart.Data(">", execution.getOperationsMoveRight()));

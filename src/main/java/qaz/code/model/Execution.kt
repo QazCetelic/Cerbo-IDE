@@ -1,247 +1,220 @@
-package qaz.code.model;
+package qaz.code.model
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+import qaz.code.model.Analyzer.findEmptyLoops
+import qaz.code.model.Analyzer.isBalanced
+import qaz.code.model.Result.Succes
+import java.util.stream.Collectors
 
-public class Execution {
-    private int pointer;
-    private final int size;
-    private final int maximumOperations;
-    
-    private int operationsMoveLeft;
-    private int operationsMoveRight;
-    private int operationsIncrease;
-    private int operationsDecrease;
-    private int operationsLeftLoop;
-    private int operationsRightLoop;
-    private int operationsInput;
-    private int operationsOutput;
-    
-    public int getOperations() {
-        return operationsMoveLeft + operationsMoveRight + operationsIncrease + operationsDecrease + operationsLeftLoop + operationsRightLoop + operationsInput + operationsOutput;
-    }
-    
-    public int getOperationsLeftLoop() {
-        return operationsLeftLoop;
-    }
-    
-    public int getOperationsRightLoop() {
-        return operationsRightLoop;
-    }
-    
-    public int getOperationsInput() {
-        return operationsInput;
-    }
-    
-    public int getOperationsOutput() {
-        return operationsOutput;
-    }
-    
-    public int getOperationsMoveLeft() {
-        return operationsMoveLeft;
-    }
-    
-    public int getOperationsMoveRight() {
-        return operationsMoveRight;
-    }
-    
-    public int getOperationsIncrease() {
-        return operationsIncrease;
-    }
-    
-    public int getOperationsDecrease() {
-        return operationsDecrease;
-    }
-    
-    private int getLoopOperations() {
-        return operationsLeftLoop + operationsRightLoop + operationsMoveLeft + operationsMoveRight;
-    }
-    
-    private final byte[] memory;
-    
+class Execution(profile: Profile) {
+    private var pointer = 0
+    private val size: Int
+    private val maximumOperations: Int
+
+    var operationsMoveLeft = 0
+        private set(value) {
+            field = value
+            checkOperations()
+        }
+    var operationsMoveRight = 0
+        private set(value) {
+            field = value
+            checkOperations()
+        }
+    var operationsIncrease = 0
+        private set(value) {
+            field = value
+            checkOperations()
+        }
+    var operationsDecrease = 0
+        private set(value) {
+            field = value
+            checkOperations()
+        }
+    var operationsLeftLoop = 0
+        private set(value) {
+            field = value
+            checkOperations()
+        }
+    var operationsRightLoop = 0
+        private set(value) {
+            field = value
+            checkOperations()
+        }
+    var operationsInput = 0
+        private set(value) {
+            field = value
+            checkOperations()
+        }
+    var operationsOutput = 0
+        private set(value) {
+            field = value
+            checkOperations()
+        }
+    val operations: Int
+        get() = operationsMoveLeft + operationsMoveRight + operationsIncrease + operationsDecrease + operationsLeftLoop + operationsRightLoop + operationsInput + operationsOutput
+    private val loopOperations: Int
+        get() = operationsLeftLoop + operationsRightLoop + operationsMoveLeft + operationsMoveRight
+    private val memory: ByteArray
+
     /**
      * @return A clone of the memory array
      */
-    public byte[] getMemory() {
-        return memory.clone();
+    fun getMemory(): ByteArray {
+        return memory.clone()
     }
-    
+
     /**
      * @return The last index of the memory array that is not 0
      */
-    public int getLastFilledIndex() {
-        int lastIndex = memory.length - 1;
-        while (lastIndex > 0 && memory[lastIndex] == 0) {
-            lastIndex--;
+    val lastFilledIndex: Int
+        get() {
+            // TODO Keep track of this using a variable to prevent having to loop through the whole array every time
+            var lastIndex = memory.lastIndex
+            while (lastIndex > 0 && memory[lastIndex] == 0.toByte()) {
+                lastIndex--
+            }
+            return lastIndex
         }
-        return lastIndex;
-    }
-    
+
     /**
      * @return The amount of bytes in memory that aren't 0
      */
-    public int getAmountNotEmpty() {
-        int counter = 0;
-        for (byte b : memory) {
-            if (b != 0) {
-                counter++;
+    val amountNotEmpty: Int
+        get() = memory.count { it != 0.toByte() }
+
+    init {
+        size = profile.size
+        memory = ByteArray(size)
+        maximumOperations = profile.maximumOperations
+    }
+
+    @Throws(ExecutionException::class)
+    private fun checkOperations() {
+        if (loopOperations >= maximumOperations) {
+            throw ExecutionException("Infinite loop? Maximum of $maximumOperations looping operations exceeded")
+        }
+    }
+
+    fun interpret(s: String, input: List<Char>): Result {
+        val start = System.currentTimeMillis()
+        return try {
+            if (!isBalanced(s)) throw ExecutionException("Brackets are not balanced")
+            val emptyLoops = findEmptyLoops(s)
+            if (emptyLoops.isNotEmpty()) {
+                throw ExecutionException("Empty loops found at character ${emptyLoops.joinToString(separator = ", ")}")
             }
-        }
-        return counter;
-    }
+            var c = 0
+            val output = mutableListOf<List<Char>>()
+            var lineOutput = mutableListOf<Char>()
+            var i = 0
+            while (i < s.length) {
 
-    public Execution(Profile profile) {
-        this.size = profile.size;
-        memory = new byte[this.size];
-        this.maximumOperations = profile.maximumOperations;
-    }
-
-    private void checkOperations() throws ExecutionException {
-        if (getLoopOperations() >= maximumOperations) {
-            throw new ExecutionException("Infinite loop? Maximum of " + maximumOperations + " looping operations exceeded");
-        }
-    }
-
-    public Result interpret(String s, List<Character> input) {
-        long start = System.currentTimeMillis();
-        try {
-            if (!Analyzer.isBalanced(s)) throw new ExecutionException("Brackets are not balanced");
-            List<Integer> emptyLoops = Analyzer.findEmptyLoops(s);
-            if (!emptyLoops.isEmpty()) throw new ExecutionException("Empty loops found at character " + emptyLoops.stream().map(String::valueOf).collect(Collectors.joining(", ")));
-            
-            int c = 0;
-            ArrayList<List<Character>> output = new ArrayList<>();
-            ArrayList<Character> lineOutput = new ArrayList<>();
-
-            for (int i = 0; i < s.length(); i++) {
                 // > moves the pointer to the right
-                if (s.charAt(i) == '>') {
-                    operationsMoveRight++;
-                    if (pointer == (size - 1)) {
-                        pointer = 0;
-                        checkOperations();
+                if (s[i] == '>') {
+                    operationsMoveRight++
+                    if (pointer == size - 1) {
+                        pointer = 0
                     }
                     else {
-                        pointer++;
+                        pointer++
                     }
                 }
-                // < moves the pointer to the left
-                else if (s.charAt(i) == '<') {
-                    operationsMoveLeft++;
+                else if (s[i] == '<') {
+                    operationsMoveLeft++
                     if (pointer == 0) {
                         // Wraps to right
-                        pointer = size - 1;
-                        checkOperations();
+                        pointer = size - 1
                     }
                     else {
-                        pointer--;
+                        pointer--
                     }
                 }
-                // + increments the value of the memory cell under the pointer
-                else if (s.charAt(i) == '+') {
-                    operationsIncrease++;
-                    memory[pointer]++;
+                else if (s[i] == '+') {
+                    operationsIncrease++
+                    memory[pointer]++
                 }
-                // - decrements the value of the memory cell under the pointer
-                else if (s.charAt(i) == '-') {
-                    operationsDecrease++;
-                    memory[pointer]--;
+                else if (s[i] == '-') {
+                    operationsDecrease++
+                    memory[pointer]--
                 }
-                // . outputs the character signified by the cell at the pointer
-                else if (s.charAt(i) == '.') {
-                    operationsOutput++;
-                    char character = (char) (memory[pointer]);
-                    lineOutput.add(character);
+                else if (s[i] == '.') {
+                    operationsOutput++
+                    val character = Char(memory[pointer].toUShort())
+                    lineOutput.add(character)
                 }
-                else if (s.charAt(i) == '\n') {
-                    output.add(lineOutput);
-                    lineOutput = new ArrayList<>();
+                else if (s[i] == '\n') {
+                    output.add(lineOutput)
+                    lineOutput = ArrayList()
                 }
-                // , inputs a character and store it in the cell at the pointer
-                else if (s.charAt(i) == ',') {
-                    operationsInput++;
-                    if (input.size() > 0) {
-                        memory[pointer] = (byte) (input.remove(0).charValue());
+                else if (s[i] == ',') {
+                    operationsInput++
+                    if (input.size > 0) {
+                        memory[pointer] = input.first().toChar().code.toByte()
+                        input.drop(1)
                     }
                     else {
-                        throw new ExecutionException("No input available");
+                        throw ExecutionException("No input available")
                     }
                 }
-                // [ jumps past the matching ] if the cell under the pointer is 0
-                else if (s.charAt(i) == '[') {
-                    operationsLeftLoop++;
-                    checkOperations();
-                    if (memory[pointer] == 0) {
-                        operationsLeftLoop++;
-                        checkOperations();
-                        i++;
-                        while (c > 0 || s.charAt(i) != ']') {
-                            checkOperations();
-                            if (s.charAt(i) == '[') {
-                                c++;
+                else if (s[i] == '[') {
+                    operationsLeftLoop++
+                    if (memory[pointer].toInt() == 0) {
+                        operationsLeftLoop++
+                        i++
+                        while (c > 0 || s[i] != ']') {
+                            if (s[i] == '[') {
+                                c++
                             }
-                            else if (s.charAt(i) == ']') {
-                                c--;
+                            else if (s[i] == ']') {
+                                c--
                             }
-                            i++;
+                            i++
                         }
                     }
                 }
-                // ] jumps back to the matching [ if the cell under the pointer is nonzero
-                else if (s.charAt(i) == ']') {
-                    operationsRightLoop++;
-                    checkOperations();
-                    if (memory[pointer] != 0) {
-                        operationsRightLoop++;
-                        checkOperations();
-                        i--;
-                        while (c > 0 || s.charAt(i) != '[') {
-                            if (s.charAt(i) == ']') {
-                                operationsRightLoop++;
-                                c++;
+                else if (s[i] == ']') {
+                    operationsRightLoop++
+                    if (memory[pointer].toInt() != 0) {
+                        operationsRightLoop++
+                        i--
+                        while (c > 0 || s[i] != '[') {
+                            if (s[i] == ']') {
+                                operationsRightLoop++
+                                c++
                             }
-                            else if (s.charAt(i) == '[') {
-                                operationsLeftLoop++;
-                                c--;
+                            else if (s[i] == '[') {
+                                operationsLeftLoop++
+                                c--
                             }
                             else {
-                                operationsLeftLoop++; // TODO remove
+                                operationsLeftLoop++ // TODO remove
                             }
-                            checkOperations();
-                            i--;
+                            i--
                         }
-                        i--;
+                        i--
                     }
                 }
+                i++
             }
-            if (!lineOutput.isEmpty()) {
-                output.add(lineOutput);
+            if (lineOutput.isNotEmpty()) {
+                output.add(lineOutput)
             }
-            long end = System.currentTimeMillis();
-            return new Result.Succes(output, (end - start), this);
+            val end = System.currentTimeMillis()
+
+            return Result.Succes(output, end - start, this)
         }
-        catch (ExecutionException e) {
-            System.err.println(e.getMessage());
-            long end = System.currentTimeMillis();
-            return new Result.Failure(e.getMessage(), (end - start), this);
+        catch (e: ExecutionException) {
+            System.err.println(e.message)
+            val end = System.currentTimeMillis()
+            return Result.Failure(e.message!!, end - start, this)
         }
     }
 
-    public static class Profile {
-        final int size;
-        final int maximumOperations;
-        public Profile(int size, int maximumOperations) {
-            // TODO create a profile using settings pane and use it for the execution
-            this.size = size;
-            this.maximumOperations = maximumOperations;
+    // TODO create a profile using settings pane and use it for the execution
+    class Profile(val size: Int, val maximumOperations: Int) {
+        companion object {
+            val DEFAULT = Profile(30000, 512000)
         }
+    }
 
-        public static final Profile DEFAULT = new Profile(30_000, 512_000);
-    }
-    
-    @Override
-    public String toString() {
-        return super.toString();
-    }
 }
