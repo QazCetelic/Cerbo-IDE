@@ -1,12 +1,11 @@
 package qaz.code.model
 
-import javafx.beans.property.ObjectProperty
-import javafx.beans.property.SimpleObjectProperty
-import javafx.beans.property.SimpleStringProperty
-import javafx.beans.property.StringProperty
+import javafx.beans.binding.IntegerBinding
+import javafx.beans.property.*
 import javafx.scene.control.Dialog
 import javafx.stage.FileChooser
 import qaz.code.Cerbo
+import qaz.code.model.Analyzer.countApproximateAmountOfLoops
 import qaz.code.model.Operator.Companion.OPERATORS
 import java.io.File
 import java.io.FileWriter
@@ -26,12 +25,17 @@ class Snippet {
 
     constructor(name: String) {
         nameProperty.set(name)
+        val loopProp: IntegerProperty = SimpleIntegerProperty()
+        approximateLoopsProperty = loopProp
         codeProperty.addListener { _, _, _ ->
             ExecutionManager.INSTANCE.process(this)
+            loopProp.set(countApproximateAmountOfLoops(codeProperty.get()))
         }
         // Initially process the sheet
         ExecutionManager.INSTANCE.process(this)
     }
+
+    val approximateLoopsProperty: ReadOnlyIntegerProperty
 
     /**
      * @param maxLineLength The maximum length of a line in the code, use null to disable.

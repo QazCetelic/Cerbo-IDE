@@ -6,10 +6,9 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.BorderPane;
-import qaz.code.model.Execution;
-import qaz.code.model.Result;
-import qaz.code.model.Snippet;
+import qaz.code.model.*;
 
 import java.util.ArrayList;
 
@@ -30,17 +29,27 @@ public class OperationsView extends BorderPane {
             else {
                 Execution execution = result.getExecution();
                 ObservableList<PieChart.Data> list = FXCollections.observableArrayList(new ArrayList<>());
-                list.add(new PieChart.Data("<", execution.getOperationsMoveLeft()));
-                list.add(new PieChart.Data(">", execution.getOperationsMoveRight()));
-                list.add(new PieChart.Data("+", execution.getOperationsIncrease()));
-                list.add(new PieChart.Data("-", execution.getOperationsDecrease()));
-                list.add(new PieChart.Data("[", execution.getOperationsLeftLoop()));
-                list.add(new PieChart.Data("]", execution.getOperationsRightLoop()));
-                list.add(new PieChart.Data(",", execution.getOperationsInput()));
-                list.add(new PieChart.Data(".", execution.getOperationsOutput()));
+    
+                StringBuilder tooltipText = new StringBuilder().append("Operations:");
+                // Add the amount of times an operator was used to the data for each operator
+                for (Operator operator : execution.getOperationsCounter().keySet()) {
+                    String charString = Character.toString(operator.getChar());
+                    int count = execution.getOperationsCounter().get(operator);
+                    list.add(new PieChart.Data(charString, count));
+                    tooltipText.append('\n').append(operator).append(": ").append(count);
+                }
+                // Remove the entries for operators that were not used to prevent chart clutter
                 list.removeIf(data -> data.getPieValue() == 0);
+                
+                // Operations:
+                // INCREMENT: 4
+                // OUTPUT: 3
+                Tooltip tooltip = new Tooltip(tooltipText.toString());
+                Tooltip.install(operationsDistributionChart, tooltip);
+                
                 Platform.runLater(() -> {
-                    Label operationsLabel = new Label(execution.getOperations() + " operations");
+                    String text = execution.getOperations() + " operations, " + snippet.getApproximateLoopsProperty().get() + " loops";
+                    Label operationsLabel = new Label(text);
                     operationsLabel.setPadding(new Insets(0, 0, 0, 5));
                     setTop(operationsLabel);
                     setCenter(operationsDistributionChart);
