@@ -10,6 +10,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import qaz.code.Cerbo;
+import qaz.code.model.Execution;
 import qaz.code.model.Operations;
 import qaz.code.model.Snippet;
 
@@ -75,7 +76,7 @@ public class CodePane extends BorderPane {
     }
     
     // TODO use byte[] as parameter
-    public void showResults(List<List<Character>> results) {
+    public void showResults(List<Execution.Line> results) {
         // TODO the size of the output lines is still not quite right
         DoubleBinding paragraphHeightBinding = Bindings.createDoubleBinding(
             () -> codeView.getTotalHeightEstimate() / codeView.getParagraphs().size(), codeView.totalHeightEstimateProperty()
@@ -86,7 +87,11 @@ public class CodePane extends BorderPane {
         
         VBox rows = new VBox(0);
         int index = -1;
-        for (List<Character> result : results) {
+        for (Execution.Line line : results) {
+            HBox pointerAndOutput = new HBox(0);
+            pointerAndOutput.getChildren().add(new Label("\u00BB" + line.getPointer() + "\u00AB "));
+            
+            List<Character> result = line.getOutput();
             // Add output for line...
             if (!result.isEmpty()) {
                 HBox row = new HBox(0);
@@ -101,12 +106,13 @@ public class CodePane extends BorderPane {
                         System.out.println("byteView height: " + byteView.getHeight() + " byteView maxHeight: " + byteView.getMaxHeight() + " byteView paragraphHeight: " + paragraphHeightBinding.get());
                     });
                 }
-                rows.getChildren().add(row);
+                pointerAndOutput.getChildren().add(row);
             }
             // ...or when a line has no output, add a blank row
             else {
-                rows.getChildren().add(new Label(""));
+                pointerAndOutput.getChildren().add(new Label(""));
             }
+            rows.getChildren().add(pointerAndOutput);
         }
         resultsPane.setContent(rows);
     }

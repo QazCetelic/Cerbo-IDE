@@ -101,9 +101,15 @@ class Execution(profile: Profile) {
             if (emptyLoops.isNotEmpty()) {
                 throw ExecutionException("Empty loops found at character ${emptyLoops.joinToString(separator = ", ")}")
             }
-            var c = 0
-            val output = mutableListOf<List<Char>>()
+
+            val output = mutableListOf<Line>()
             var lineOutput = mutableListOf<Char>()
+            fun nextLine() {
+                output.add(Line(lineOutput, pointer))
+                lineOutput = mutableListOf()
+            }
+
+            var c = 0
             var i = 0
             while (i < s.length) {
 
@@ -141,8 +147,7 @@ class Execution(profile: Profile) {
                     lineOutput.add(character)
                 }
                 else if (s[i] == '\n') {
-                    output.add(lineOutput)
-                    lineOutput = ArrayList()
+                    nextLine()
                 }
                 else if (s[i] == ',') {
                     operationsInput++
@@ -194,7 +199,7 @@ class Execution(profile: Profile) {
                 i++
             }
             if (lineOutput.isNotEmpty()) {
-                output.add(lineOutput)
+                nextLine()
             }
             val end = System.currentTimeMillis()
 
@@ -208,10 +213,12 @@ class Execution(profile: Profile) {
     }
 
     // TODO create a profile using settings pane and use it for the execution
-    class Profile(val size: Int, val maximumOperations: Int) {
+    data class Profile(val size: Int, val maximumOperations: Int) {
         companion object {
             val DEFAULT = Profile(30000, 512_000)
         }
     }
+
+    data class Line(val output: List<Char>, val pointer: Int)
 
 }
