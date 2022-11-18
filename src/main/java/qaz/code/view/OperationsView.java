@@ -36,8 +36,8 @@ public class OperationsView extends BorderPane {
                 list.add(new PieChart.Data("-", execution.getOperationsDecrease()));
                 list.add(new PieChart.Data("[", execution.getOperationsLeftLoop()));
                 list.add(new PieChart.Data("]", execution.getOperationsRightLoop()));
-                list.add(new PieChart.Data(".", execution.getOperationsInput()));
-                list.add(new PieChart.Data(",", execution.getOperationsOutput()));
+                list.add(new PieChart.Data(",", execution.getOperationsInput()));
+                list.add(new PieChart.Data(".", execution.getOperationsOutput()));
                 list.removeIf(data -> data.getPieValue() == 0);
                 Platform.runLater(() -> {
                     Label operationsLabel = new Label(execution.getOperations() + " operations");
