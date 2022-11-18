@@ -7,7 +7,7 @@ import javafx.beans.property.StringProperty
 import javafx.scene.control.Dialog
 import javafx.stage.FileChooser
 import qaz.code.Cerbo
-import qaz.code.model.Operations.Companion.OPERATORS
+import qaz.code.model.Operator.Companion.OPERATORS
 import java.io.File
 import java.io.FileWriter
 import java.io.IOException

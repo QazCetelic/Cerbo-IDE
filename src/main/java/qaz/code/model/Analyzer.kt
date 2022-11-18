@@ -7,9 +7,9 @@ object Analyzer {
     fun isBalanced(str: String): Boolean {
         var count = 0
         for (i in str.indices) {
-            if (str[i] == Operations.LOOP_START.char) {
+            if (str[i] == Operator.LOOP_START.char) {
                 count++
-            } else if (str[i] == Operations.LOOP_END.char) {
+            } else if (str[i] == Operator.LOOP_END.char) {
                 count--
             }
             if (count < 0) {

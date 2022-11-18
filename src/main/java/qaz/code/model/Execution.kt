@@ -2,56 +2,25 @@ package qaz.code.model
 
 import qaz.code.model.Analyzer.findEmptyLoops
 import qaz.code.model.Analyzer.isBalanced
+import kotlin.properties.Delegates
 
 class Execution(profile: Profile) {
     private var pointer = 0
-    private val size: Int
-    private val maximumOperations: Int
+    private val profile: Profile
 
-    var operationsMoveLeft = 0
-        private set(value) {
-            field = value
-            checkOperations()
-        }
-    var operationsMoveRight = 0
-        private set(value) {
-            field = value
-            checkOperations()
-        }
-    var operationsIncrease = 0
-        private set(value) {
-            field = value
-            checkOperations()
-        }
-    var operationsDecrease = 0
-        private set(value) {
-            field = value
-            checkOperations()
-        }
-    var operationsLeftLoop = 0
-        private set(value) {
-            field = value
-            checkOperations()
-        }
-    var operationsRightLoop = 0
-        private set(value) {
-            field = value
-            checkOperations()
-        }
-    var operationsInput = 0
-        private set(value) {
-            field = value
-            checkOperations()
-        }
-    var operationsOutput = 0
-        private set(value) {
-            field = value
-            checkOperations()
-        }
+    val operationsCounter: MutableMap<Operator, Int> by Delegates.observable(mutableMapOf()) { _, _, new -> checkOperations() }
+    private fun incrementOperationCounter(operator: Operator) {
+        operationsCounter[operator] = (operationsCounter[operator] ?: 0) + 1
+    }
+
     val operations: Int
-        get() = operationsMoveLeft + operationsMoveRight + operationsIncrease + operationsDecrease + operationsLeftLoop + operationsRightLoop + operationsInput + operationsOutput
-    private val loopOperations: Int
-        get() = operationsLeftLoop + operationsRightLoop + operationsMoveLeft + operationsMoveRight
+        get() = operationsCounter.values.sum()
+    private val loopingOperations: Int
+        get() = operationsCounter
+            .entries
+            .filter { entry -> entry.key in Operator.LOOP_OPERATORS || entry.key in Operator.MOVE_OPERATORS }
+            .sumOf { entry -> entry.value }
+
     private val memory: ByteArray
 
     /**
@@ -81,15 +50,14 @@ class Execution(profile: Profile) {
         get() = memory.count { it != 0.toByte() }
 
     init {
-        size = profile.size
-        memory = ByteArray(size)
-        maximumOperations = profile.maximumOperations
+        this.profile = profile
+        memory = ByteArray(profile.size)
     }
 
     @Throws(ExecutionException::class)
     private fun checkOperations() {
-        if (loopOperations >= maximumOperations) {
-            throw ExecutionException("Infinite loop? Maximum of $maximumOperations looping operations exceeded")
+        if (loopingOperations >= profile.maximumOperations) {
+            throw ExecutionException("Infinite loop? Maximum of ${profile.maximumOperations} looping operations exceeded")
         }
     }
 
@@ -115,7 +83,7 @@ class Execution(profile: Profile) {
 
                 // > moves the pointer to the right
                 if (s[i] == '>') {
-                    operationsMoveRight++
+                    incrementOperationCounter(Operator.MOVE_RIGHT)
                     if (pointer == memory.lastIndex) {
                         pointer = 0
                     }
@@ -124,7 +92,7 @@ class Execution(profile: Profile) {
                     }
                 }
                 else if (s[i] == '<') {
-                    operationsMoveLeft++
+                    incrementOperationCounter(Operator.MOVE_LEFT)
                     if (pointer == 0) {
                         // Wraps to right
                         pointer = memory.lastIndex
@@ -134,15 +102,15 @@ class Execution(profile: Profile) {
                     }
                 }
                 else if (s[i] == '+') {
-                    operationsIncrease++
+                    incrementOperationCounter(Operator.INCREMENT)
                     memory[pointer]++
                 }
                 else if (s[i] == '-') {
-                    operationsDecrease++
+                    incrementOperationCounter(Operator.DECREMENT)
                     memory[pointer]--
                 }
                 else if (s[i] == '.') {
-                    operationsOutput++
+                    incrementOperationCounter(Operator.OUTPUT)
                     val character = Char(memory[pointer].toUShort())
                     lineOutput.add(character)
                 }
@@ -150,7 +118,7 @@ class Execution(profile: Profile) {
                     nextLine()
                 }
                 else if (s[i] == ',') {
-                    operationsInput++
+                    incrementOperationCounter(Operator.INPUT)
                     if (input.isNotEmpty()) {
                         memory[pointer] = input.removeAt(0).code.toByte()
                     }
@@ -159,9 +127,9 @@ class Execution(profile: Profile) {
                     }
                 }
                 else if (s[i] == '[') {
-                    operationsLeftLoop++
+                    incrementOperationCounter(Operator.LOOP_START)
                     if (memory[pointer] == 0.toByte()) {
-                        operationsLeftLoop++
+                        incrementOperationCounter(Operator.LOOP_START)
                         i++
                         while (c > 0 || s[i] != ']') {
                             if (s[i] == '[') {
@@ -175,21 +143,22 @@ class Execution(profile: Profile) {
                     }
                 }
                 else if (s[i] == ']') {
-                    operationsRightLoop++
+                    incrementOperationCounter(Operator.LOOP_END)
                     if (memory[pointer] != 0.toByte()) {
-                        operationsRightLoop++
+                        incrementOperationCounter(Operator.LOOP_END)
                         i--
                         while (c > 0 || s[i] != '[') {
                             if (s[i] == ']') {
-                                operationsRightLoop++
+                                incrementOperationCounter(Operator.LOOP_END)
                                 c++
                             }
                             else if (s[i] == '[') {
-                                operationsLeftLoop++
+                                incrementOperationCounter(Operator.LOOP_START)
                                 c--
                             }
                             else {
-                                operationsLeftLoop++ // TODO remove
+                                incrementOperationCounter(Operator.LOOP_START)
+                                // TODO remove
                             }
                             i--
                         }
@@ -215,7 +184,7 @@ class Execution(profile: Profile) {
     // TODO create a profile using settings pane and use it for the execution
     data class Profile(val size: Int, val maximumOperations: Int) {
         companion object {
-            val DEFAULT = Profile(30000, 512_000)
+            val DEFAULT = Profile(32_000, 512_000)
         }
     }
 

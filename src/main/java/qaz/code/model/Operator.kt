@@ -1,6 +1,6 @@
 package qaz.code.model
 
-enum class Operations(val char: Char) {
+enum class Operator(val char: Char) {
     INCREMENT('+'),
     DECREMENT('-'),
     MOVE_RIGHT('<'),
@@ -12,5 +12,7 @@ enum class Operations(val char: Char) {
 
     companion object {
         val OPERATORS = values().map { it.char }.toSet()
+        val LOOP_OPERATORS = setOf(LOOP_START, LOOP_END)
+        val MOVE_OPERATORS = setOf(MOVE_LEFT, MOVE_RIGHT)
     }
 }
