@@ -4,9 +4,7 @@ import javafx.beans.property.ObjectProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.beans.property.StringProperty
-import javafx.beans.value.ObservableValue
 import javafx.scene.control.Dialog
-import javafx.scene.layout.BorderPane
 import javafx.stage.FileChooser
 import qaz.code.Cerbo
 import qaz.code.model.Operations.Companion.OPERATORS
@@ -15,8 +13,7 @@ import java.io.FileWriter
 import java.io.IOException
 import java.util.*
 
-// TODO Split model and view
-class Sheet : BorderPane {
+class Snippet {
     val lastResultProperty: ObjectProperty<Result> = SimpleObjectProperty()
 
     /**
@@ -27,7 +24,7 @@ class Sheet : BorderPane {
     val inputProperty: StringProperty = SimpleStringProperty("")
     val nameProperty: StringProperty = SimpleStringProperty(null)
 
-    constructor(name: String): super() {
+    constructor(name: String) {
         nameProperty.set(name)
         codeProperty.addListener { _, _, _ ->
             ExecutionManager.INSTANCE.process(this)
@@ -40,28 +37,11 @@ class Sheet : BorderPane {
      * @param maxLineLength The maximum length of a line in the code, use null to disable.
      * @return Whether something has changed.
      */
-    fun minify(maxLineLength: Int?): Boolean {
-        val code = codeProperty.get().toCharArray()
-        val startingHash = code.contentHashCode()
-        var newLineCounter = 0
-        val sb = StringBuilder()
-        for (c in code) {
-            if (OPERATORS.contains(c)) {
-                sb.append(c)
-                // Don't do anything with line length if it's disabled
-                if (maxLineLength != null) {
-                    newLineCounter++
-                    if (newLineCounter == 50) {
-                        sb.append('\n')
-                        newLineCounter = 0
-                    }
-                }
-            }
-        }
-        val newCode = sb.toString()
-        println("New code:\n$newCode")
-        val changed = newCode.toCharArray().contentHashCode() != startingHash
-        codeProperty.set(newCode)
+    fun minify(): Boolean {
+        val oldCode = codeProperty.get()
+        val newCode = oldCode.filter { c -> c == '\n' || c in OPERATORS }
+        val changed = oldCode != newCode
+        if (changed) codeProperty.set(newCode)
         return changed
     }
 
@@ -71,10 +51,10 @@ class Sheet : BorderPane {
      */
     fun reduceSpacing(): Boolean {
         val newCode = codeProperty.get()
-            .replace("\\n{2}".toRegex(), "\n")
+            .replace("\\n{2,}".toRegex(), "\n")
             .trim()
         val changed = newCode != codeProperty.get()
-        codeProperty.set(newCode)
+        if (changed) codeProperty.set(newCode)
         return changed
     }
 
@@ -109,7 +89,7 @@ class Sheet : BorderPane {
          * Load a sheet from file
          */
         @JvmStatic
-        fun load(): Sheet? {
+        fun load(): Snippet? {
             val fileChooser = FileChooser()
             fileChooser.title = "Load"
             fileChooser.extensionFilters.add(FileChooser.ExtensionFilter("Brainfuck Code", "*.bf"))
@@ -122,9 +102,9 @@ class Sheet : BorderPane {
                     sb.append('\n')
                 }
                 reader.close() // TODO close when exception occurs
-                val sheet = Sheet(chosenFile.name)
-                sheet.codeProperty.set(sb.toString())
-                sheet
+                val snippet = Snippet(chosenFile.name)
+                snippet.codeProperty.set(sb.toString())
+                snippet
             }
             catch (e: IOException) {
                 val dialog = Dialog<String>()

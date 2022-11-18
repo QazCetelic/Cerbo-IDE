@@ -6,7 +6,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import qaz.code.Cerbo;
 import qaz.code.model.Result;
-import qaz.code.model.Sheet;
+import qaz.code.model.Snippet;
 
 public class SheetPane extends BorderPane {
     private final CodePane codePane;
@@ -15,14 +15,14 @@ public class SheetPane extends BorderPane {
     private final OutputPane outputPane;
     private final OperationsView operationsView;
     
-    public SheetPane(Sheet sheet, Cerbo cerbo) {
-        codePane = new CodePane(sheet, cerbo);
+    public SheetPane(Snippet snippet, Cerbo cerbo) {
+        codePane = new CodePane(snippet, cerbo);
         memoryPane = new MemoryPane();
         memoryPane.visibleProperty().bind(cerbo.views.showMemoryPane);
         inputField = new TextField();
         outputPane = new OutputPane();
         outputPane.visibleProperty().bind(cerbo.views.showOutputView);
-        operationsView = new OperationsView(sheet);
+        operationsView = new OperationsView(snippet);
         operationsView.visibleProperty().bind(cerbo.views.showOperationsView);
         
         setCenter(codePane);
@@ -43,10 +43,10 @@ public class SheetPane extends BorderPane {
         outputPane.maxWidthProperty().bind(maxWidthProperty());
         
         inputField.setPromptText("Input");
-        sheet.getInputProperty().bindBidirectional(inputField.textProperty());
+        snippet.getInputProperty().bindBidirectional(inputField.textProperty());
         
-        sheet.getLastResultProperty().addListener((observable, oldValue, newValue) -> showResult(newValue));
-        showResult(sheet.getLastResultProperty().get());
+        snippet.getLastResultProperty().addListener((observable, oldValue, newValue) -> showResult(newValue));
+        showResult(snippet.getLastResultProperty().get());
     }
     
     private void showResult(Result result) {

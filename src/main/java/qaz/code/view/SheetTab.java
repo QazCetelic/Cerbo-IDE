@@ -2,19 +2,19 @@ package qaz.code.view;
 
 import javafx.scene.control.Tab;
 import qaz.code.Cerbo;
-import qaz.code.model.Sheet;
+import qaz.code.model.Snippet;
 
 public class SheetTab extends Tab {
-    private final Sheet sheet;
-    public SheetTab(Sheet sheet, Cerbo cerbo) {
-        super(sheet.getNameProperty().get(), null);
-        this.sheet = sheet;
-        setContent(new SheetPane(sheet, cerbo));
-        setOnClosed(event -> cerbo.sheets.getSheetsProperty().remove(sheet));
+    private final Snippet snippet;
+    public SheetTab(Snippet snippet, Cerbo cerbo) {
+        super(snippet.getNameProperty().get(), null);
+        this.snippet = snippet;
+        setContent(new SheetPane(snippet, cerbo));
+        setOnClosed(event -> cerbo.snippets.getSnippetsProperty().remove(snippet));
     }
     
-    public Sheet getSheet() {
-        return sheet;
+    public Snippet getSheet() {
+        return snippet;
     }
     
     public SheetPane getSheetView() {

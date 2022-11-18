@@ -1,11 +1,7 @@
 package qaz.code.model
 
-import javafx.beans.property.BooleanProperty
-import javafx.beans.property.SimpleBooleanProperty
 import qaz.code.model.Analyzer.findEmptyLoops
 import qaz.code.model.Analyzer.isBalanced
-import qaz.code.model.Result.Succes
-import java.util.stream.Collectors
 
 class Execution(profile: Profile) {
     private var pointer = 0

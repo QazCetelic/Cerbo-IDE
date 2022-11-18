@@ -4,29 +4,29 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
 import qaz.code.Cerbo;
-import qaz.code.model.Sheet;
+import qaz.code.model.Snippet;
 
 // TODO split menu's into seperate classes
 public class MenuBar extends javafx.scene.control.MenuBar {
     
     public MenuBar(Cerbo cerbo) {
-        Menu file = new Menu("File");
+        Menu snippet = new Menu("Snippet");
         MenuItem save = new MenuItem("Save");
-        save.setOnAction(e -> cerbo.sheets.getSelectedSheetProperty().get().save());
+        save.setOnAction(e -> cerbo.snippets.getSelectedSnippetProperty().get().save());
         MenuItem load = new MenuItem("Load");
         load.setOnAction(e -> {
-            Sheet loadedSheet = Sheet.load();
-            if (loadedSheet != null) {
-                cerbo.sheets.getSelectedSheetProperty().set(loadedSheet);
+            Snippet loadedSnippet = Snippet.load();
+            if (loadedSnippet != null) {
+                cerbo.snippets.getSelectedSnippetProperty().set(loadedSnippet);
             }
         });
-        file.getItems().addAll(save, load);
+        snippet.getItems().addAll(save, load);
         
         Menu edit = new Menu("Edit");
         MenuItem minify = new MenuItem("Minify");
-        minify.setOnAction(e -> cerbo.sheets.getSelectedSheetProperty().get().minify(50));
+        minify.setOnAction(e -> cerbo.snippets.getSelectedSnippetProperty().get().minify());
         MenuItem reduceSpacing = new MenuItem("Reduce Spacing");
-        reduceSpacing.setOnAction(e -> cerbo.sheets.getSelectedSheetProperty().get().reduceSpacing());
+        reduceSpacing.setOnAction(e -> cerbo.snippets.getSelectedSnippetProperty().get().reduceSpacing());
         edit.getItems().addAll(minify, reduceSpacing);
         
         Menu view = new Menu("View");
@@ -47,6 +47,6 @@ public class MenuBar extends javafx.scene.control.MenuBar {
         execute.setSelected(true);
         // TODO add execution profiles
         execution.getItems().addAll(execute);
-        getMenus().addAll(file, edit, view, execution);
+        getMenus().addAll(snippet, edit, view, execution);
     }
 }

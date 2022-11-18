@@ -9,21 +9,21 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import qaz.code.model.Execution;
 import qaz.code.model.Result;
-import qaz.code.model.Sheet;
+import qaz.code.model.Snippet;
 
 import java.util.ArrayList;
 
 public class OperationsView extends BorderPane {
     private final PieChart operationsDistributionChart;
     
-    public OperationsView(Sheet sheet) {
+    public OperationsView(Snippet snippet) {
         operationsDistributionChart = new PieChart();
         operationsDistributionChart.setTitle(null);
         operationsDistributionChart.setStartAngle(90);
         operationsDistributionChart.setLegendVisible(false);
     
-        sheet.getLastResultProperty().addListener((observable, oldValue, newValue) -> {
-            Result result = sheet.getLastResultProperty().get();
+        snippet.getLastResultProperty().addListener((observable, oldValue, newValue) -> {
+            Result result = snippet.getLastResultProperty().get();
             if (result == null) {
                 Platform.runLater(() -> setTop(new Label("No results")));
             }

@@ -7,8 +7,8 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.stage.Stage;
-import qaz.code.model.Sheet;
-import qaz.code.model.Sheets;
+import qaz.code.model.Snippet;
+import qaz.code.model.Snippets;
 import qaz.code.model.Views;
 import qaz.code.view.MainPane;
 
@@ -22,7 +22,7 @@ public class Cerbo extends Application {
         return mainStage;
     }
     
-    public final Sheets sheets = new Sheets();
+    public final Snippets snippets = new Snippets();
     public final Views views = new Views();
     
     public static void main(String[] args) {
@@ -43,7 +43,7 @@ public class Cerbo extends Application {
         scene.getAccelerators().put(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN), () -> {
             mainPane.getSheetsPane().addEmptySheet();
         });
-        sheets.getSelectedSheetProperty().addListener(observable -> changeTitle());
+        snippets.getSelectedSnippetProperty().addListener(observable -> changeTitle());
         Image icon = new Image(Objects.requireNonNull(Cerbo.class.getResourceAsStream("/icon.png"), "Failed to load icon"));
         stage.getIcons().add(icon);
         stage.setScene(scene);
@@ -52,7 +52,7 @@ public class Cerbo extends Application {
     }
 
     public void changeTitle() {
-        Sheet sheet = sheets.getSelectedSheetProperty().get();
-        mainStage.setTitle("Cerbo IDE - " + (sheet != null ? sheet.getNameProperty().get() : "None"));
+        Snippet snippet = snippets.getSelectedSnippetProperty().get();
+        mainStage.setTitle("Cerbo IDE - " + (snippet != null ? snippet.getNameProperty().get() : "None"));
     }
 }

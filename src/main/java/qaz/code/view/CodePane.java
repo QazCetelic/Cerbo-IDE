@@ -10,9 +10,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import qaz.code.Cerbo;
-import qaz.code.model.Analyzer;
 import qaz.code.model.Operations;
-import qaz.code.model.Sheet;
+import qaz.code.model.Snippet;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,11 +19,11 @@ import java.util.List;
 public class CodePane extends BorderPane {
     public final CodeView codeView;
     public ScrollPane resultsPane;
-    private final Sheet sheet;
+    private final Snippet snippet;
     
-    public CodePane(Sheet sheet, Cerbo cerbo) {
-        this.sheet = sheet;
-        codeView = new CodeView(sheet);
+    public CodePane(Snippet snippet, Cerbo cerbo) {
+        this.snippet = snippet;
+        codeView = new CodeView(snippet);
         resultsPane = new ScrollPane();
         setRight(resultsPane);
         resultsPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);

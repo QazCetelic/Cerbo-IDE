@@ -7,15 +7,15 @@ import javafx.scene.paint.Color;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.reactfx.value.Val;
-import qaz.code.model.Sheet;
+import qaz.code.model.Snippet;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CodeView extends CodeArea {
     private static final Pattern WHITE_SPACE = Pattern.compile("^\\s+");
-    public CodeView(Sheet sheet) {
-        super(sheet.getCodeProperty().get());
+    public CodeView(Snippet snippet) {
+        super(snippet.getCodeProperty().get());
         // Ensure CSS stylesheet is compatible with this class
         getStyleClass().add("text-area");
         // Add line numbers at the left of the code area
@@ -27,9 +27,9 @@ public class CodeView extends CodeArea {
         getVisibleParagraphs().addModificationObserver(new VisibleParagraphStyler<>(this, Highlighter::computeHighlighting));
         
         // Sync code with model TODO: this is kind of a hack but also the cleanest way to do it
-        ((Val<String>) textProperty()).asVar(this::replaceText).bindBidirectional(sheet.getCodeProperty());
+        ((Val<String>) textProperty()).asVar(this::replaceText).bindBidirectional(snippet.getCodeProperty());
         
-        sheet.getCodeProperty().addListener((observable, oldValue, newValue) -> triggerHighlight());
+        snippet.getCodeProperty().addListener((observable, oldValue, newValue) -> triggerHighlight());
         // Empty listener required for it to properly detect changes for some reason
         textProperty().addListener((observable, oldValue, newValue) -> {});
         

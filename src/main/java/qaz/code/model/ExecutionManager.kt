@@ -14,14 +14,14 @@ class ExecutionManager {
     private var executionThread: Thread? = null
     private var killThread: Thread? = null
 
-    fun process(sheet: Sheet) {
-        val codeWithComments = sheet.codeProperty.get()
+    fun process(snippet: Snippet) {
+        val codeWithComments = snippet.codeProperty.get()
         // Remove everything that isn't an instruction or newline
         val cleanedCode = codeWithComments
             .replace(FILTER_COMMENTS, "")
             .trim()
 
-        val input = sheet.inputProperty.get().toMutableList();
+        val input = snippet.inputProperty.get().toMutableList();
 
         // Only executes if the code or input has changed to prevent unnecessary executions
         if (cleanedCode.hashCode() != lastExecutionCodeHash || input.hashCode() != lastExecutionInputHash) {
@@ -39,7 +39,7 @@ class ExecutionManager {
                 val execution = Execution(Execution.Profile.DEFAULT)
                 // Execute code
                 val result = execution.interpret(cleanedCode, input)
-                sheet.lastResultProperty.set(result)
+                snippet.lastResultProperty.set(result)
             }
             // And start it
             executionThread!!.start()
