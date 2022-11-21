@@ -8,7 +8,11 @@ class Execution(profile: Profile) {
     private var pointer = 0
     private val profile: Profile
 
-    val operationsCounter: MutableMap<Operator, Int> by Delegates.observable(mutableMapOf()) { _, _, new -> checkOperations() }
+    val operationsCounter: MutableMap<Operator, Int> by Delegates.observable(mutableMapOf()) { _, _, new ->
+        if (loopingOperations >= profile.maximumOperations) {
+            throw ExecutionException("Infinite loop? Maximum of ${profile.maximumOperations} looping operations exceeded")
+        }
+    }
     private fun incrementOperationCounter(operator: Operator) {
         operationsCounter[operator] = (operationsCounter[operator] ?: 0) + 1
     }
@@ -52,13 +56,6 @@ class Execution(profile: Profile) {
     init {
         this.profile = profile
         memory = ByteArray(profile.size)
-    }
-
-    @Throws(ExecutionException::class)
-    private fun checkOperations() {
-        if (loopingOperations >= profile.maximumOperations) {
-            throw ExecutionException("Infinite loop? Maximum of ${profile.maximumOperations} looping operations exceeded")
-        }
     }
 
     fun interpret(s: String, input: MutableList<Char>): Result {
