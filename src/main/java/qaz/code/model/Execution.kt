@@ -1,22 +1,21 @@
 package qaz.code.model
 
+import qaz.code.model.Analyzer.emptyLoops
 import qaz.code.model.Analyzer.findEmptyLoops
 import qaz.code.model.Analyzer.isBalanced
 import kotlin.properties.Delegates
 
-class Execution(profile: Profile) {
+class Execution(private val profile: Profile) {
+    // Normalized properties
     private var pointer = 0
-    private val profile: Profile
-
+    private val memory: ByteArray = ByteArray(profile.size)
     val operationsCounter: MutableMap<Operator, Int> by Delegates.observable(mutableMapOf()) { _, _, new ->
         if (loopingOperations >= profile.maximumOperations) {
             throw ExecutionException("Infinite loop? Maximum of ${profile.maximumOperations} looping operations exceeded")
         }
     }
-    private fun incrementOperationCounter(operator: Operator) {
-        operationsCounter[operator] = (operationsCounter[operator] ?: 0) + 1
-    }
 
+    // Derived properties
     val operations: Int
         get() = operationsCounter.values.sum()
     private val loopingOperations: Int
@@ -24,16 +23,11 @@ class Execution(profile: Profile) {
             .entries
             .filter { entry -> entry.key in Operator.LOOP_OPERATORS || entry.key in Operator.MOVE_OPERATORS }
             .sumOf { entry -> entry.value }
-
-    private val memory: ByteArray
-
     /**
      * @return A clone of the memory array
      */
-    fun getMemory(): ByteArray {
-        return memory.clone()
-    }
-
+    val memoryCloned: ByteArray
+        get() = memory.clone()
     /**
      * @return The last index of the memory array that is not 0
      */
@@ -46,25 +40,20 @@ class Execution(profile: Profile) {
             }
             return lastIndex
         }
-
     /**
      * @return The amount of bytes in memory that aren't 0
      */
     val amountNotEmpty: Int
         get() = memory.count { it != 0.toByte() }
 
-    init {
-        this.profile = profile
-        memory = ByteArray(profile.size)
-    }
-
+    // Methods
     fun interpret(s: String, input: MutableList<Char>): Result {
+        // TODO split into multiple functions
         val start = System.currentTimeMillis()
         try {
             if (!isBalanced(s)) throw ExecutionException("Brackets are not balanced")
-            val emptyLoops = findEmptyLoops(s)
-            if (emptyLoops.isNotEmpty()) {
-                throw ExecutionException("Empty loops found at character ${emptyLoops.joinToString(separator = ", ")}")
+            if (emptyLoops(s).any()) {
+                throw ExecutionException("Empty loops found at character ${findEmptyLoops(s).joinToString(separator = ", ")}")
             }
 
             val output = mutableListOf<Line>()
@@ -178,13 +167,16 @@ class Execution(profile: Profile) {
         }
     }
 
-    // TODO create a profile using settings pane and use it for the execution
+    private fun incrementOperationCounter(operator: Operator) {
+        operationsCounter[operator] = (operationsCounter[operator] ?: 0) + 1
+    }
+
+    // Data classes
     data class Profile(val size: Int, val maximumOperations: Int) {
         companion object {
+            // TODO create a profile using settings pane and use it for the execution
             val DEFAULT = Profile(32_000, 512_000)
         }
     }
-
     data class Line(val output: List<Char>, val pointer: Int)
-
 }

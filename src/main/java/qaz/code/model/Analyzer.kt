@@ -1,6 +1,8 @@
 package qaz.code.model
 
+import java.util.regex.MatchResult
 import java.util.regex.Pattern
+import kotlin.streams.asSequence
 
 object Analyzer {
     @JvmStatic
@@ -9,7 +11,8 @@ object Analyzer {
         for (i in str.indices) {
             if (str[i] == Operator.LOOP_START.char) {
                 count++
-            } else if (str[i] == Operator.LOOP_END.char) {
+            }
+            else if (str[i] == Operator.LOOP_END.char) {
                 count--
             }
             if (count < 0) {
@@ -51,12 +54,17 @@ object Analyzer {
      * @return All the starting indexes of the empty loops.
      */
     @JvmStatic
-    fun findEmptyLoops(code: String): List<Int> {
-        val matcher = EMPTY_LOOP_PATTERN.matcher(code)
-        val indexes: MutableList<Int> = ArrayList()
-        while (matcher.find()) {
-            indexes.add(matcher.start())
-        }
-        return indexes
-    }
+    fun findEmptyLoops(code: String): List<Int> = emptyLoops(code).toList()
+
+    /**
+     * Finds any loop that doesn't contain any operators incrementally.
+     * @param code The code that potentially contains empty loops.
+     * @return An iterator that returns all the starting indexes of the empty loops.
+     */
+    @JvmStatic
+    fun emptyLoops(code: String): Sequence<Int> = EMPTY_LOOP_PATTERN
+        .matcher(code)
+        .results()
+        .map(MatchResult::start)
+        .asSequence()
 }

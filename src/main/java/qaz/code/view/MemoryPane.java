@@ -38,7 +38,7 @@ public class MemoryPane extends BorderPane {
         });
         setBottom(lastIndexButton);
         
-        byte[] memory = execution.getMemory();
+        byte[] memory = execution.getMemoryCloned();
         int lastIndex = execution.getLastFilledIndex();
         // This caps the amount of memory displayed to 2500 to prevent lag, TODO find more efficient way
         for (int i = 0; i <= Math.min(lastIndex, 2_500); i++) {
